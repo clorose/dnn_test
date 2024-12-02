@@ -603,4 +603,15 @@ data/
 # Generated plots
 src/*.png
 
+# p10k zsh
+zsh/p10k.zsh
+
+
+# research Note
+*research_YH*.*
+
+# result folder
+src/result_*/
+
+
 # End of https://www.toptal.com/developers/gitignore/api/python,venv,jetbrains+all,visualstudiocode,macos,windows,linux,node,react,nextjs,java,kotlin

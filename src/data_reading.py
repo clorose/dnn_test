@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import os, sys, math, copy
 import glob
+import datetime
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
@@ -15,8 +16,16 @@ from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten, Input
 from tensorflow.keras.optimizers import RMSprop, SGD, Adam
 from tensorflow.keras.callbacks import ModelCheckpoint, LearningRateScheduler, History
 from tensorflow.keras import backend as K
+from tensorflow.keras.layers import BatchNormalization
 
 from function_dataPreprocess import tool_condition, item_inspection, machining_process
+
+# 결과 저장 디렉토리 생성
+current_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+result_dir = "result_" + current_time  # 현재 디렉토리 아래에 바로 생성
+
+if not os.path.exists(result_dir):
+    os.makedirs(result_dir)
 
 # train data
 train_sample = pd.read_csv("../data/train.csv", header=0, encoding='utf-8')
@@ -127,27 +136,41 @@ Y_train = tf.keras.utils.to_categorical(Y_train, nb_classes)  # one-hot encoding
 Y_test = tf.keras.utils.to_categorical(Y_test, nb_classes)
 
 # AI모델 디자인
+
 model = Sequential()
-model.add(Dense(128, activation='relu', input_dim=48))
+model.add(Dense(128, activation=None, input_dim=48))
+model.add(BatchNormalization())
+model.add(Activation('relu'))
 model.add(Dropout(0.3))
-model.add(Dense(256, activation='relu'))
+model.add(Dense(256, activation=None))
+model.add(BatchNormalization())
+model.add(Activation('relu'))
 model.add(Dropout(0.3))
-model.add(Dense(512, activation='relu'))
+model.add(Dense(512, activation=None))
+model.add(BatchNormalization())
+model.add(Activation('relu'))
 model.add(Dropout(0.3))
-model.add(Dense(512, activation='relu'))
+model.add(Dense(512, activation=None))
+model.add(BatchNormalization())
+model.add(Activation('relu'))
 model.add(Dropout(0.3))
-model.add(Dense(256, activation='relu'))
+model.add(Dense(256, activation=None))
+model.add(BatchNormalization())
+model.add(Activation('relu'))
 model.add(Dropout(0.3))
-model.add(Dense(128, activation='relu'))
+model.add(Dense(128, activation=None))
+model.add(BatchNormalization())
+model.add(Activation('relu'))
 model.add(Dropout(0.3))
 model.add(Dense(nb_classes, activation='sigmoid'))
 
 # 모델 체크포인트 및 옵티마이저 설정
 model_checkpoint = ModelCheckpoint(
-    'weight_CNC_binary.keras',
+    os.path.join(result_dir, 'weight_CNC_binary.keras'),
     monitor='val_accuracy',
     save_best_only=True
 )
+
 opt = Adam(learning_rate=lr)
 model.summary()
 model.compile(
@@ -172,8 +195,8 @@ model.fit(
 )
 
 # 모델 저장
-model.save_weights('weight_CNC_binary.weights.h5')
-model.save("CNC_DLL.keras")
+model.save_weights(os.path.join(result_dir, 'weight_CNC_binary.weights.h5'))
+model.save(os.path.join(result_dir, 'CNC_DLL.keras'))
 
 # 결과 분석 및 해석
 loss_and_metrics = model.evaluate(X_train, Y_train, batch_size=32)
@@ -190,7 +213,7 @@ plt.title('Model Accuracy')
 plt.xlabel('Epoch')
 plt.ylabel('Accuracy')
 plt.legend()
-plt.savefig('accuracy_plot.png')
+plt.savefig(os.path.join(result_dir, 'accuracy_plot.png'))
 plt.show()
 
 plt.figure(figsize=(10, 6))
@@ -200,5 +223,27 @@ plt.title('Model Loss')
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
 plt.legend()
-plt.savefig('loss_plot.png')
+plt.savefig(os.path.join(result_dir, 'loss_plot.png'))
 plt.show()
+
+# 최종 결과 저장
+with open(os.path.join(result_dir, 'final_results.txt'), 'w') as f:
+    f.write("=== Training Results ===\n")
+    f.write(f"Final Training Loss: {loss_and_metrics[0]:.4f}\n")
+    f.write(f"Final Training Accuracy: {loss_and_metrics[1]:.4f}\n\n")
+    
+    f.write("=== Test Results ===\n")
+    f.write(f"Final Test Loss: {loss_and_metrics2[0]:.4f}\n")
+    f.write(f"Final Test Accuracy: {loss_and_metrics2[1]:.4f}\n")
+
+# 모델 구조 저장
+with open(os.path.join(result_dir, 'model_architecture.txt'), 'w') as f:
+    model.summary(print_fn=lambda x: f.write(x + '\n'))
+
+# 학습 설정 정보 저장
+with open(os.path.join(result_dir, 'training_config.txt'), 'w') as f:
+    f.write(f"Batch Size: {batch_size}\n")
+    f.write(f"Epochs: {epochs}\n")
+    f.write(f"Learning Rate: {lr}\n")
+    f.write(f"Training Data Size: {len(X_train)}\n")
+    f.write(f"Test Data Size: {len(X_test)}\n")
