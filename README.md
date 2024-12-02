@@ -67,3 +67,5 @@ docker compose up dev
 
 ## 참고 
 
+[p10k 설정 및 폰트](https://drive.google.com/drive/folders/1Upm2IqMFXcjj1bIKIsR7CUpoEo4Zrl9f?usp=sharing)
+
