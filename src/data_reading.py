@@ -229,6 +229,8 @@ plt.show()
 # 최종 결과 저장
 with open(os.path.join(result_dir, 'final_results.txt'), 'w') as f:
     f.write("=== Training Results ===\n")
+    f.write(f"Training Loss - Min: {min(history.history['loss']):.4f}, Max: {max(history.history['loss']):.4f}\n")
+    f.write(f"Validation Loss - Min: {min(history.history['val_loss']):.4f}, Max: {max(history.history['val_loss']):.4f}\n")
     f.write(f"Final Training Loss: {loss_and_metrics[0]:.4f}\n")
     f.write(f"Final Training Accuracy: {loss_and_metrics[1]:.4f}\n\n")
     
