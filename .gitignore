@@ -615,3 +615,7 @@ src/result_*/
 
 
 # End of https://www.toptal.com/developers/gitignore/api/python,venv,jetbrains+all,visualstudiocode,macos,windows,linux,node,react,nextjs,java,kotlin
+
+# 개인파일 
+zsh/
+runs/

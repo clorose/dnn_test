@@ -1,43 +1,60 @@
-FROM --platform=$TARGETPLATFORM python:3.11-slim
+FROM python:3.11-slim
 
-# Install system packages
-RUN apt-get update && apt-get install -y \
-  build-essential \
-  libgl1-mesa-glx \
-  libglib2.0-0 \
-  libpng-dev \
-  libjpeg-dev \
-  curl \
-  git \
-  vim \
-  nano \
-  zsh \
-  && rm -rf /var/lib/apt/lists/* \
-  && sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
-  && git clone https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k \
-  && git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions \
-  && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-
-# Copy zsh configuration files
-COPY ./zsh/zshrc /root/.zshrc
-COPY ./zsh/p10k.zsh /root/.p10k.zsh
-COPY ./.project_root ./app/.project_root
-
-# Copy requirements.txt and install Python packages
-COPY requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r /app/requirements.txt
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PYTHONPATH=/app \
+  VIRTUAL_ENV=/app/.venv \
+  PATH="/app/.venv/bin:/root/.local/bin:$PATH" \
+  TZ=Asia/Seoul
 
 # Set working directory
 WORKDIR /app
 
-# Create necessary directories
-RUN mkdir -p /app/data /app/runs /app/models /app/src \
-  && chmod 777 /app/data /app/runs /app/models /app/src
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  build-essential \
+  curl \
+  git \
+  tzdata \
+  nano \
+  zsh \
+  htop \
+  tree \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* \
+  # Set timezone
+  && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
+  && echo $TZ > /etc/timezone
 
-# Set environment variables
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONPATH=/app
+# Install uv and create virtual environment
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
+  && . $HOME/.profile \
+  && uv venv /app/.venv
 
-# Set zsh as default shell
+# Copy requirements first for better caching
+COPY requirements.txt .
+
+# Install Python packages using uv
+RUN . /app/.venv/bin/activate \
+  && uv pip install -r requirements.txt
+
+# Install ZSH configuration
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
+  && git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k \
+  && git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions \
+  && git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+
+# Copy ZSH configuration files
+COPY ./zsh/zshrc /root/.zshrc
+COPY ./zsh/p10k.zsh /root/.p10k.zsh
+COPY ./zsh/aliases.zsh /root/.aliases.zsh
+
+# Create project directories
+RUN mkdir -p /app/data /app/src /app/runs
+
+# Set default shell to ZSH
 SHELL ["/bin/zsh", "-c"]
+
+# Add volume for data
+VOLUME ["/app/data"]

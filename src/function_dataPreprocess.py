@@ -1,4 +1,7 @@
+# path: ~/Develop/dnn_test/src/function_dataPreprocess.py
+
 def tool_condition(input):
+    """공구 상태 전처리"""
     for i in range(len(input)):
         if input[i,4] == 'unworn':
             input[i,4] = 0
@@ -8,6 +11,7 @@ def tool_condition(input):
     return input
 
 def item_inspection(input):
+    """검사 결과 전처리"""
     for i in range(len(input)):
         if input[i,5] == 'no':
             input[i,6] = 2
@@ -19,6 +23,7 @@ def item_inspection(input):
     return input
 
 def machining_process(input):
+    """가공 공정 전처리"""
     for i in range(len(input)):
         if input[i,47] == 'Prep':
             input[i,47] = 0
@@ -42,4 +47,3 @@ def machining_process(input):
             input[i,47] = 9          
 
     return input
-

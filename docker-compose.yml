@@ -1,14 +1,11 @@
 services:
   dev:
+    container_name: dnn-dev
     build:
       context: .
       dockerfile: Dockerfile
-      platforms:
-        - linux/amd64
-        - linux/arm64
     volumes:
       - ./data:/app/data
-      - ./models:/app/models
       - ./src:/app/src
       - ./runs:/app/runs
     environment:
@@ -17,20 +14,3 @@ services:
     stdin_open: true
     tty: true
     command: tail -f /dev/null
-
-  prod:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      platforms:
-        - linux/amd64
-        - linux/arm64
-    volumes:
-      - ./data:/app/data
-      - ./runs:/app/runs
-    command: python src/main.py
-
-volumes:
-  data:
-  runs:
-  models:
