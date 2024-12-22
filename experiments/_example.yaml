@@ -1,0 +1,54 @@
+# path: ~/Develop/dnn_test/experiments/_example.yaml
+# Example configuration with all possible options
+# 이 파일은 설정 가능한 모든 옵션을 보여주는 예시 파일입니다.
+
+# 실험 식별자(결과가 저장됨)
+tag: example_experiment
+
+# 네트워크 구조 설정
+hidden_sizes: [256, 512, 1024, 1024, 512, 256]  # 각 레이어의 뉴런 수
+dropout_rates: [0.3, 0.3, 0.3, 0.3, 0.3, 0.3]   # 각 레이어의 드롭아웃 비율
+use_batch_norm: true    # 배치 정규화 사용 여부
+
+# 학습 설정
+batch_size: 1024       # 배치 크기
+epochs: 300            # 전체 학습 반복 횟수
+learning_rate: 0.001   # 학습률
+
+# 옵티마이저 설정
+optimizer: adam        # 옵티마이저 선택 (adam, adamw, rmsprop, sgd)
+optimizer_config:      # 옵티마이저 세부 설정
+  # Adam/AdamW 설정
+  beta_1: 0.9         # Adam의 beta1 값
+  beta_2: 0.999       # Adam의 beta2 값
+  epsilon: 1e-07      # 수치 안정성을 위한 엡실론
+  weight_decay: 0.01  # AdamW의 가중치 감쇠 값
+  
+  # SGD 설정
+  momentum: 0.9       # SGD의 모멘텀 값
+  
+  # RMSprop 설정
+  rho: 0.9           # RMSprop의 감쇠율
+  centered: false     # RMSprop 중앙화 사용 여부
+
+# 정규화 설정
+l2_lambda: 0.01        # L2 정규화 강도
+label_smoothing: 0.0   # 라벨 스무딩 강도
+
+# 학습률 스케줄링
+use_cosine_scheduler: false   # 코사인 스케줄러 사용 여부
+use_reduce_lr: false         # ReduceLROnPlateau 사용 여부
+reduce_lr_patience: 10       # 성능 향상이 없을 때 기다리는 에폭 수
+reduce_lr_factor: 0.1        # 학습률 감소 비율
+min_lr: 1e-6                # 최소 학습률
+
+# 조기 종료 설정
+use_early_stopping: false     # 조기 종료 사용 여부
+early_stopping_patience: 20   # 성능 향상이 없을 때 기다리는 에폭 수
+
+# 클래스 가중치 설정
+use_class_weights: false      # 클래스 가중치 사용 여부
+class_weights: {0: 1.0, 1: 2.0}  # 각 클래스별 가중치
+
+# 모니터링 설정
+monitor_metric: "val_loss"    # 모니터링할 메트릭
