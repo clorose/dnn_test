@@ -5,6 +5,8 @@
 # 실험 식별자(결과가 저장됨)
 tag: example_experiment
 
+classification_type: binary   # 'binary' 또는 'multiclass'
+
 # 네트워크 구조 설정
 hidden_sizes: [256, 512, 1024, 1024, 512, 256]  # 각 레이어의 뉴런 수
 dropout_rates: [0.3, 0.3, 0.3, 0.3, 0.3, 0.3]   # 각 레이어의 드롭아웃 비율
@@ -48,7 +50,7 @@ early_stopping_patience: 20   # 성능 향상이 없을 때 기다리는 에폭 
 
 # 클래스 가중치 설정
 use_class_weights: false      # 클래스 가중치 사용 여부
-class_weights: {0: 1.0, 1: 2.0}  # 각 클래스별 가중치
+class_weights: {0: 1.0, 1: 2.0}  # binary: {0: 1.0, 1: 2.0}, multiclass: {0: 1.0, 1: 1.0, 2: 1.0}
 
 # 모니터링 설정
 monitor_metric: "val_loss"    # 모니터링할 메트릭

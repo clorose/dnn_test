@@ -619,3 +619,5 @@ src/result_*/
 # 개인파일 
 zsh/
 runs/
+*.pdf
+src/old/

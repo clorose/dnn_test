@@ -8,6 +8,7 @@ services:
       - ./data:/app/data
       - ./src:/app/src
       - ./runs:/app/runs
+      - ./experiments:/app/experiments
     environment:
       - PYTHONUNBUFFERED=1
       - PYTHONDONTWRITEBYTECODE=1

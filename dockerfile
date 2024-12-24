@@ -51,7 +51,7 @@ COPY ./zsh/p10k.zsh /root/.p10k.zsh
 COPY ./zsh/aliases.zsh /root/.aliases.zsh
 
 # Create project directories
-RUN mkdir -p /app/data /app/src /app/runs
+RUN mkdir -p /app/data /app/src /app/runs /app/experiments
 
 # Set default shell to ZSH
 SHELL ["/bin/zsh", "-c"]
