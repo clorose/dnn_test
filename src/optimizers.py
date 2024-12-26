@@ -43,29 +43,37 @@ class ModelOptimizer:
     def get_optimizer(self):
         """설정된 옵티마이저 반환"""
         opt_name = self.current_config["optimizer"].lower()
-        lr = self.current_config["learning_rate"]
+        lr = float(self.current_config["learning_rate"])  # 명시적 형변환
         config = self.current_config["optimizer_config"]
 
         if opt_name == "adam":
             return Adam(
                 learning_rate=lr,
-                beta_1=config["beta_1"],
-                beta_2=config["beta_2"],
-                epsilon=config["epsilon"],
+                beta_1=float(config["beta_1"]),
+                beta_2=float(config["beta_2"]),
+                epsilon=float(config["epsilon"]),  # 명시적 float 변환
             )
         elif opt_name == "adamw":
             return AdamW(
                 learning_rate=lr,
-                weight_decay=config["weight_decay"],
-                beta_1=config["beta_1"],
-                beta_2=config["beta_2"],
+                weight_decay=float(config["weight_decay"]),
+                beta_1=float(config["beta_1"]),
+                beta_2=float(config["beta_2"]),
+                epsilon=float(config["epsilon"]),  # epsilon 추가
             )
         elif opt_name == "rmsprop":
-            return RMSprop(learning_rate=lr, rho=config["rho"])
+            return RMSprop(
+                learning_rate=lr,
+                rho=float(config["rho"]),
+                epsilon=float(config["epsilon"]),  # epsilon 추가
+            )
         elif opt_name == "sgd":
-            return SGD(learning_rate=lr, momentum=config["momentum"])
+            return SGD(learning_rate=lr, momentum=float(config["momentum"]))
         else:
-            return Adam(learning_rate=lr)
+            return Adam(
+                learning_rate=lr,
+                epsilon=float(config["epsilon"]),  # 기본 optimizer에도 epsilon 추가
+            )
 
     def get_callbacks(self, epochs):
         """콜백 함수들 반환"""

@@ -1,15 +1,15 @@
 # 실험 식별자
-tag: heavy_regularization_experiment
+tag: balanced_training_experiment
 
 # 네트워크 구조 설정 (필수)
 hidden_sizes: [256, 512, 1024, 1024, 512, 256]
-dropout_rates: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+dropout_rates: [0.3, 0.3, 0.4, 0.4, 0.3, 0.3]
 use_batch_norm: true
 
 # 학습 기본 설정 (필수)
-batch_size: 256
-epochs: 500
-learning_rate: 0.001
+batch_size: 128
+epochs: 300
+learning_rate: 0.0005
 
 # 옵티마이저 설정 (필수)
 optimizer: adamw
@@ -17,10 +17,10 @@ optimizer_config:
   beta_1: 0.9
   beta_2: 0.999
   epsilon: 1e-07
-  weight_decay: 0.1
+  weight_decay: 0.01
 
 # 정규화 설정 (필수)
-l2_lambda: 0.1
+l2_lambda: 0.01
 
 # 추가 정규화 설정 (선택)
 label_smoothing: 0.1
@@ -29,7 +29,7 @@ label_smoothing: 0.1
 use_cosine_scheduler: true
 use_reduce_lr: true
 reduce_lr_patience: 15
-reduce_lr_factor: 0.2
+reduce_lr_factor: 0.5
 min_lr: 1e-6
 
 # 조기 종료 설정 (선택)
@@ -40,5 +40,7 @@ early_stopping_patience: 30
 monitor_metric: "val_loss"
 
 # 클래스 가중치 (선택)
-use_class_weights: false
-class_weights: null
+use_class_weights: true
+class_weights: 
+    0: 1.0
+    1: 3.0  # 불량 데이터에 가중치 부여
