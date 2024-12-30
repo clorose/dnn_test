@@ -1,9 +1,48 @@
+version: '3.8'
+
 services:
-  dev:
-    container_name: dnn-dev
+  metal39:
+    container_name: dnn-metal39
     build:
       context: .
-      dockerfile: Dockerfile # 최신 버전용
+      dockerfile: Dockerfile.metal39
+    volumes:
+      - ./data:/app/data
+      - ./src:/app/src
+      - ./runs:/app/runs
+      - ./experiments:/app/experiments
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    platform: linux/arm64
+    stdin_open: true
+    tty: true
+    command: tail -f /dev/null
+
+  metal311:
+    container_name: dnn-metal311
+    build:
+      context: .
+      dockerfile: Dockerfile.metal311
+    volumes:
+      - ./data:/app/data
+      - ./src:/app/src
+      - ./runs:/app/runs
+      - ./experiments:/app/experiments
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    platform: linux/arm64
+    stdin_open: true
+    tty: true
+    command: tail -f /dev/null
+
+  win37:
+    platform: linux/amd64
+    container_name: dnn-win37
+    build:
+      context: .
+      dockerfile: Dockerfile.win37
     volumes:
       - ./data:/app/data
       - ./src:/app/src
@@ -16,12 +55,12 @@ services:
     tty: true
     command: tail -f /dev/null
 
-  old:
+  win311:
     platform: linux/amd64
-    container_name: dnn-old
+    container_name: dnn-win311
     build:
       context: .
-      dockerfile: Dockerfile.old # 구버전용
+      dockerfile: Dockerfile.win311
     volumes:
       - ./data:/app/data
       - ./src:/app/src

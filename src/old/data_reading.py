@@ -19,6 +19,9 @@ from tensorflow.keras.optimizers import RMSprop, SGD, Adam
 from tensorflow.keras.callbacks import ModelCheckpoint, LearningRateScheduler, History
 from tensorflow.keras import backend as K
 from tensorflow.keras.layers import BatchNormalization
+from tensorflow.keras.regularizers import l2
+from tensorflow.keras.callbacks import EarlyStopping
+
 
 from src.function_dataPreprocess import (
     tool_condition,
@@ -136,7 +139,7 @@ Y_train[l : l * 2, :] = 1  # 불량품
 nb_classes = 2  # 라벨 종류의 개수 < 현재 데이터에서 '양품', '불량품'으로 2개
 batch_size = 1024
 epochs = 300
-lr = 1e-4
+lr = 5e-5
 
 # AI 데이터셋 준비
 X_train = X_train.astype("float32")
@@ -145,40 +148,37 @@ X_test = X_test.astype("float32")
 Y_train = tf.keras.utils.to_categorical(Y_train, nb_classes)  # one-hot encoding
 Y_test = tf.keras.utils.to_categorical(Y_test, nb_classes)
 
-# AI모델 디자인
 
+# AI모델 디자인
 model = Sequential()
-model.add(Dense(128, activation=None, input_dim=48))
-model.add(BatchNormalization())
-model.add(Activation("relu"))
+model.add(Dense(256, activation="relu", input_dim=48, kernel_regularizer=l2(0.01)))
 model.add(Dropout(0.3))
-model.add(Dense(256, activation=None))
-model.add(BatchNormalization())
-model.add(Activation("relu"))
+model.add(Dense(512, activation="relu", kernel_regularizer=l2(0.01)))
 model.add(Dropout(0.3))
-model.add(Dense(512, activation=None))
-model.add(BatchNormalization())
-model.add(Activation("relu"))
+model.add(Dense(1024, activation="relu", kernel_regularizer=l2(0.01)))
 model.add(Dropout(0.3))
-model.add(Dense(512, activation=None))
-model.add(BatchNormalization())
-model.add(Activation("relu"))
+model.add(Dense(1024, activation="relu", kernel_regularizer=l2(0.01)))
 model.add(Dropout(0.3))
-model.add(Dense(256, activation=None))
-model.add(BatchNormalization())
-model.add(Activation("relu"))
+model.add(Dense(512, activation="relu", kernel_regularizer=l2(0.01)))
 model.add(Dropout(0.3))
-model.add(Dense(128, activation=None))
-model.add(BatchNormalization())
-model.add(Activation("relu"))
+model.add(Dense(256, activation="relu", kernel_regularizer=l2(0.01)))
 model.add(Dropout(0.3))
-model.add(Dense(nb_classes, activation="sigmoid"))
+model.add(Dense(nb_classes, activation="sigmoid", kernel_regularizer=l2(0.01)))
 
 # 모델 체크포인트 및 옵티마이저 설정
 model_checkpoint = ModelCheckpoint(
     os.path.join(result_dir, "weight_CNC_binary.keras"),
     monitor="val_accuracy",
     save_best_only=True,
+)
+
+
+early_stopping = EarlyStopping(
+    monitor="val_loss",
+    patience=30,  # 30회 동안 개선이 없으면 중단
+    restore_best_weights=True,  # 가장 좋은 성능의 가중치 복원
+    verbose=1,
+    min_delta=0.01,  # 0.01 이상 개선되지 않으면 patience 적용
 )
 
 opt = Adam(learning_rate=lr)
@@ -197,7 +197,7 @@ model.fit(
     epochs=epochs,
     validation_split=0.1,
     shuffle=True,
-    callbacks=[history, model_checkpoint],
+    callbacks=[history, model_checkpoint, early_stopping],
 )
 
 # 모델 저장
@@ -210,6 +210,28 @@ print("Train set results:", loss_and_metrics)
 
 loss_and_metrics2 = model.evaluate(X_test, Y_test, batch_size=32)
 print("Test set results:", loss_and_metrics2)
+
+
+# 최소, 최대 epoch 찾기
+def get_min_max_epochs(history_dict):
+    train_loss = history_dict["loss"]
+    val_loss = history_dict["val_loss"]
+
+    train_min_epoch = train_loss.index(min(train_loss)) + 1
+    train_max_epoch = train_loss.index(max(train_loss)) + 1
+    val_min_epoch = val_loss.index(min(val_loss)) + 1
+    val_max_epoch = val_loss.index(max(val_loss)) + 1
+
+    return {
+        "train_min_epoch": train_min_epoch,
+        "train_max_epoch": train_max_epoch,
+        "val_min_epoch": val_min_epoch,
+        "val_max_epoch": val_max_epoch,
+    }
+
+
+# 에포크 정보 얻기
+epoch_info = get_min_max_epochs(history.history)
 
 # 시각화
 plt.figure(figsize=(10, 6))
@@ -225,6 +247,31 @@ plt.show()
 plt.figure(figsize=(10, 6))
 plt.plot(history.history["loss"], label="Training Loss")
 plt.plot(history.history["val_loss"], label="Validation Loss")
+# 최소/최대값 포인트 표시
+plt.plot(
+    epoch_info["train_min_epoch"] - 1,
+    min(history.history["loss"]),
+    "go",
+    label="Train Min",
+)
+plt.plot(
+    epoch_info["train_max_epoch"] - 1,
+    max(history.history["loss"]),
+    "ro",
+    label="Train Max",
+)
+plt.plot(
+    epoch_info["val_min_epoch"] - 1,
+    min(history.history["val_loss"]),
+    "g^",
+    label="Val Min",
+)
+plt.plot(
+    epoch_info["val_max_epoch"] - 1,
+    max(history.history["val_loss"]),
+    "r^",
+    label="Val Max",
+)
 plt.title("Model Loss")
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
@@ -236,10 +283,12 @@ plt.show()
 with open(os.path.join(result_dir, "final_results.txt"), "w") as f:
     f.write("=== Training Results ===\n")
     f.write(
-        f"Training Loss - Min: {min(history.history['loss']):.4f}, Max: {max(history.history['loss']):.4f}\n"
+        f"Training Loss - Min: {min(history.history['loss']):.4f} (Epoch {epoch_info['train_min_epoch']}), "
+        f"Max: {max(history.history['loss']):.4f} (Epoch {epoch_info['train_max_epoch']})\n"
     )
     f.write(
-        f"Validation Loss - Min: {min(history.history['val_loss']):.4f}, Max: {max(history.history['val_loss']):.4f}\n"
+        f"Validation Loss - Min: {min(history.history['val_loss']):.4f} (Epoch {epoch_info['val_min_epoch']}), "
+        f"Max: {max(history.history['val_loss']):.4f} (Epoch {epoch_info['val_max_epoch']})\n"
     )
     f.write(f"Final Training Loss: {loss_and_metrics[0]:.4f}\n")
     f.write(f"Final Training Accuracy: {loss_and_metrics[1]:.4f}\n\n")
