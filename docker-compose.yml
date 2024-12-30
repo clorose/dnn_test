@@ -3,7 +3,25 @@ services:
     container_name: dnn-dev
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile # 최신 버전용
+    volumes:
+      - ./data:/app/data
+      - ./src:/app/src
+      - ./runs:/app/runs
+      - ./experiments:/app/experiments
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    stdin_open: true
+    tty: true
+    command: tail -f /dev/null
+
+  old:
+    platform: linux/amd64
+    container_name: dnn-old
+    build:
+      context: .
+      dockerfile: Dockerfile.old # 구버전용
     volumes:
       - ./data:/app/data
       - ./src:/app/src
