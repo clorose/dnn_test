@@ -1,0 +1,18 @@
+# path: ~/Develop/dnn_test/src/first/config/regularized_v3.yaml
+model_params:
+  nb_classes: 2
+  batch_size: 128
+  epochs: 150  # 100 → 150 (충분한 학습 기회 제공)
+  learning_rate: 1e-4  # 5e-5 → 1e-4 (약간 증가)
+
+training:
+  use_dropout: true
+  dropout_rate: 0.2  # 0.25 → 0.2 (규제 더 완화)
+  use_regularization: true
+  regularization_rate: 1e-5  # 5e-5 → 1e-5 (L2 규제 대폭 완화)
+  use_lr_schedule: true
+  lr_patience: 7  # 5 → 7 (더 긴 관찰 기간)
+  lr_factor: 0.2  # 0.3 → 0.2 (더 급격한 감소)
+  min_lr: 1e-6  # 5e-7 → 1e-6
+  use_batch_norm: true
+  class_weights: null  # 클래스 가중치 제거 (성능 저하 확인됨)
