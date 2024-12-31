@@ -1,3 +1,4 @@
+# path: ~/Develop/dnn_test/src/pdf/olddata.py
 import pandas as pd
 import numpy as np
 import glob
@@ -22,9 +23,13 @@ sys.setrecursionlimit(10000)
 # For plotting
 import matplotlib.pyplot as plt
 
-# Set the path to the data
-data_path = "/app/data"
-root_path = "/app/"
+# Set the path to the data(Docker)
+# data_path = "/app/data"
+# root_path = "/app/"
+
+# Set the path to the data(Local)
+data_path = "../../data"
+root_path = "../../"
 
 virtual_data_path = os.path.join(data_path, "CNC Virtual Data set _v2")
 run_data_path = os.path.join(root_path, "runs")

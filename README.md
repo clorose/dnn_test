@@ -248,5 +248,62 @@ python run_bayesian_opt.py --config "../experiments/base.yaml" --n_trials 20
 
 4. 실험 재현성
    - 설정 파일 보관
-   - 랜덤 시드 설정(42 는 모든 것을 해결함.)
+   - 랜덤 시드 설정(42 is the answer to everything)
    - 환경 의존성 주의
+
+
+# Conda/Mamba 기본 명령어 정리
+
+## 환경 관리
+```bash
+# 환경 목록 확인
+conda env list
+
+# 새 환경 생성
+conda create -n 환경이름 python=3.8
+
+# 환경 활성화
+conda activate 환경이름
+
+# 현재 환경 비활성화
+conda deactivate
+
+# 환경 삭제
+conda env remove -n 환경이름
+
+# 현재 환경을 파일로 내보내기
+conda env export > environment.yml
+
+# 환경 파일로부터 새 환경 생성
+conda env create -f environment.yml
+```
+
+## 패키지 관리
+```bash
+# 현재 환경의 패키지 목록
+conda list
+
+# 패키지 설치
+conda install 패키지이름
+conda install 패키지이름=1.0  # 특정 버전
+
+# 패키지 업데이트
+conda update 패키지이름
+
+# 패키지 제거
+conda remove 패키지이름
+```
+
+## 주의사항
+1. 모든 `conda` 명령어는 `mamba`로 대체 가능 (더 빠름)
+2. 환경은 중앙에서 관리되므로 프로젝트 종료 후 정리 필요
+3. `base` 환경은 수정하지 않는 것을 권장
+
+## 자동 활성화 설정
+```bash
+# base 환경 자동 활성화 끄기
+conda config --set auto_activate_base false
+
+# base 환경 자동 활성화 켜기
+conda config --set auto_activate_base true
+```
