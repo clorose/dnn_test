@@ -16,23 +16,12 @@ from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten, Input
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras import initializers, regularizers, constraints, backend as K
 
-timestamp = datetime.datetime.now().strftime("%m%d_%H%M")
-# 재귀 제한 증가
-sys.setrecursionlimit(10000)
-
 # For plotting
 import matplotlib.pyplot as plt
 
-# Set the path to the data(Docker)
-# data_path = "/app/data"
-# root_path = "/app/"
-
-# Set the path to the data(Local)
-data_path = "../../data"
-root_path = "../../"
-
-virtual_data_path = os.path.join(data_path, "CNC Virtual Data set _v2")
-run_data_path = os.path.join(root_path, "runs")
+# Local modules
+from config import *
+from data_processor import tool_condition, item_inspection, machining_process
 
 # Load train.csv
 train_sample = pd.read_csv(
@@ -50,7 +39,6 @@ li_df = []
 for filename in all_files:
     df = pd.read_csv(filename, index_col=None, header=0)
     li_df.append(df)
-
 
 # count the number of pass/fail items
 nb_pass = 0
@@ -70,52 +58,6 @@ print("공정 마쳤으나 육안검사 통과 못한 샘플 개수 :", nb_pass_
 print("공정 중지된 샘플 개수 :", nb_defective)
 print("전체 샘플 개수 :", nb_pass + nb_pass_half + nb_defective)
 
-
-def tool_condition(input):
-    for i in range(len(input)):
-        if input[i, 4] == "unworn":
-            input[i, 4] = 0
-        else:
-            input[i, 4] = 1
-    return input
-
-
-def item_inspection(input):
-    for i in range(len(input)):
-        if input[i, 5] == "no":
-            input[i, 6] = 2
-        elif input[i, 5] == "yes" and input[i, 6] == "no":
-            input[i, 6] = 1
-        elif input[i, 5] == "yes" and input[i, 6] == "yes":
-            input[i, 6] = 0
-    return input
-
-
-def machining_process(input):
-    for i in range(len(input)):
-        if input[i, 47] == "Prep":
-            input[i, 47] = 0
-        elif input[i, 47] == "Layer 1 Up":
-            input[i, 47] = 1
-        elif input[i, 47] == "Layer 1 Down":
-            input[i, 47] = 2
-        elif input[i, 47] == "Layer 2 Up":
-            input[i, 47] = 3
-        elif input[i, 47] == "Layer 2 Down":
-            input[i, 47] = 4
-        elif input[i, 47] == "Layer 3 Up":
-            input[i, 47] = 5
-        elif input[i, 47] == "Layer 3 Down":
-            input[i, 47] = 6
-        elif input[i, 47] == "Repositioning":
-            input[i, 47] = 7
-        elif input[i, 47] == "End" or input[i, 47] == "end":
-            input[i, 47] = 8
-        elif input[i, 47] == "Starting":
-            input[i, 47] = 9
-    return input
-
-
 # Modifying train.csv for training
 # - [tool_condition] : unworn/worn -> 0 / 1
 # - [item_inspection] : machining_finalized & passed -> yes & yes / yes & no / no -> 0 / 1 / 2
@@ -128,7 +70,6 @@ train_sample_info = np.array(train_sample_np.copy())
 train_sample_info = tool_condition(train_sample_info)
 train_sample_info = item_inspection(train_sample_info)
 
-# Print the resulting data
 print(train_sample_info)
 
 train_sample_info = np.delete(train_sample_info, 5, 1)
@@ -148,7 +89,6 @@ li_fail = []
 
 for filename in all_files:
     df = pd.read_csv(filename, index_col=None, header=0)
-    # 디버깅을 위한 출력 추가
     print(
         f"train_sample_info[k, 3]: {train_sample_info[k, 3]}, type: {type(train_sample_info[k, 3])}"
     )
@@ -163,7 +103,6 @@ for filename in all_files:
 
     k += 1
 
-# Debugging: Check if the lists have data before attempting to concatenate
 print(f"li_pass contains {len(li_pass)} items")
 print(f"li_pass_half contains {len(li_pass_half)} items")
 print(f"li_fail contains {len(li_fail)} items")
@@ -183,7 +122,6 @@ print("공정 미완료한 전체 데이터 수 :", len(data_fail))
 print(data_pass.shape)
 print(data_pass_half.shape)
 print(data_fail.shape)
-
 
 # Modifying experiment data
 # - machining_process : From "Prep" to "End" -> 0~9
@@ -219,13 +157,7 @@ half = int(Y_train.shape[0] / 2)
 Y_train[0:half, :] = 0
 Y_train[half : half * 2, :] = 1
 
-# Print the label data
 print(Y_train)
-
-nb_classes = 2
-batch_size = 1024
-epochs = 300
-lr = 1e-4
 
 X_train = X_train.astype("float32")
 X_test = X_test.astype("float32")
@@ -237,20 +169,30 @@ print(X_test.shape)
 print(Y_train.shape)
 print(Y_test.shape)
 
+# Hidden unit sizes (128, 256, 512)
+units = [128, 256, 512]
+# Symmetric dropout rates
+drops = [0.1, 0.2, 0.3]
+
 model = Sequential()
-model.add(Dense(128, activation="relu", input_dim=48))
-model.add(Dropout(0.3))
-model.add(Dense(256, activation="relu"))
-model.add(Dropout(0.3))
-model.add(Dense(512, activation="relu"))
-model.add(Dropout(0.3))
-model.add(Dense(512, activation="relu"))
-model.add(Dropout(0.3))
-model.add(Dense(256, activation="relu"))
-model.add(Dropout(0.3))
-model.add(Dense(128, activation="relu"))
-model.add(Dropout(0.3))
+
+# Expansion layers (차원을 키워가는 층들)
+model.add(Dense(units[0], activation="relu", input_dim=48))
+model.add(Dropout(drops[0]))
+model.add(Dense(units[1], activation="relu"))
+model.add(Dropout(drops[1]))
+model.add(Dense(units[2], activation="relu"))
+model.add(Dropout(drops[2]))
+
+# Reduction layers (차원을 줄여가는 층들)
+model.add(Dense(units[2], activation="relu"))
+model.add(Dropout(drops[2]))
+model.add(Dense(units[1], activation="relu"))
+model.add(Dropout(drops[1]))
+model.add(Dense(units[0], activation="relu"))
+model.add(Dropout(drops[0]))
 model.add(Dense(nb_classes, activation="softmax"))
+
 model_checkpoint = ModelCheckpoint(
     "weight_CNC_binary.mat", monitor="val_acc", save_best_only=True
 )
@@ -274,21 +216,21 @@ model.fit(
 )
 
 loss_and_metrics = model.evaluate(X_train, Y_train, batch_size=32)
-print(loss_and_metrics)
+print("Training Data Evaluation: ", loss_and_metrics)
 
 loss_and_metrics2 = model.evaluate(X_test, Y_test, batch_size=32)
-print(loss_and_metrics2)
+print("Test Data Evaluation: ", loss_and_metrics2)
 
-plt.figure()
-plt.plot(history.history["val_accuracy"])
-plt.plot(history.history["accuracy"])
-plt.title("Accuracy During Training")
-plt.xlabel("Epoch")
-plt.ylabel("Accuracy")
-plt.legend(["Validation Accuracy", "Training Accuracy"])
-plt.savefig(f"accuracy_{timestamp}.png")
-plt.close()
+# 학습 로그 저장
+log_file = os.path.join(output_dir, "training_log.txt")
+with open(log_file, "w") as f:
+    for key, values in history.history.items():
+        f.write(f"{key}: {values}\n")
+    f.write("\n")
+    f.write(f"Training Evaluation Metrics: {loss_and_metrics}\n")
+    f.write(f"Test Evaluation Metrics: {loss_and_metrics2}\n")
 
+# 손실 그래프 저장
 plt.figure()
 plt.plot(history.history["val_loss"])
 plt.plot(history.history["loss"])
@@ -296,5 +238,23 @@ plt.title("Loss During Training")
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
 plt.legend(["Validation Loss", "Training Loss"])
-plt.savefig(f"loss_{timestamp}.png")
+plt.savefig(os.path.join(output_dir, "loss.png"))
 plt.close()
+
+# 정확도 그래프 저장
+plt.figure()
+plt.plot(history.history["val_accuracy"])
+plt.plot(history.history["accuracy"])
+plt.title("Accuracy During Training")
+plt.xlabel("Epoch")
+plt.ylabel("Accuracy")
+plt.legend(["Validation Accuracy", "Training Accuracy"])
+plt.savefig(os.path.join(output_dir, "accuracy.png"))
+plt.close()
+
+# 모델 저장 (TensorFlow SavedModel 형식)
+saved_model_path = os.path.join(output_dir, "saved_model")
+model.save(saved_model_path, save_format="tf")
+
+print(f"All results saved in: {output_dir}")
+print(f"Saved model in: {saved_model_path}")
