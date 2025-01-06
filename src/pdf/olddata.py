@@ -23,6 +23,17 @@ import matplotlib.pyplot as plt
 from config import *
 from data_processor import tool_condition, item_inspection, machining_process
 
+# Set the path to the data(Docker)
+data_path = "/app/data"
+root_path = "/app/"
+
+# Set the path to the data(Local)
+# data_path = "../../data"
+# root_path = "../../"
+
+virtual_data_path = os.path.join(data_path, "CNC Virtual Data set _v2")
+run_data_path = os.path.join(root_path, "runs")
+
 # Load train.csv
 train_sample = pd.read_csv(
     os.path.join(data_path, "train.csv"), header=0, encoding="utf-8"
@@ -250,6 +261,16 @@ plt.xlabel("Epoch")
 plt.ylabel("Accuracy")
 plt.legend(["Validation Accuracy", "Training Accuracy"])
 plt.savefig(os.path.join(output_dir, "accuracy.png"))
+plt.close()
+
+plt.figure()
+plt.plot(history.history["val_loss"])
+plt.plot(history.history["loss"])
+plt.title("Loss During Training")
+plt.xlabel("Epoch")
+plt.ylabel("Loss")
+plt.legend(["Validation Loss", "Training Loss"])
+plt.savefig(f"loss_{timestamp}.png")
 plt.close()
 
 # 모델 저장 (TensorFlow SavedModel 형식)
