@@ -1,47 +1,9 @@
-version: '3.8'
-
 services:
-  win37:
-    platform: linux/amd64
-    container_name: dnn-win37
-    build:
-      context: .
-      dockerfile: Dockerfile.win37
-    volumes:
-      - ./data:/app/data
-      - ./src:/app/src
-      - ./runs:/app/runs
-      - ./experiments:/app/experiments
-    environment:
-      - PYTHONUNBUFFERED=1
-      - PYTHONDONTWRITEBYTECODE=1
-    stdin_open: true
-    tty: true
-    command: tail -f /dev/null
-
-  win311:
-    platform: linux/amd64
-    container_name: dnn-win311
-    build:
-      context: .
-      dockerfile: Dockerfile.win311
-    volumes:
-      - ./data:/app/data
-      - ./src:/app/src
-      - ./runs:/app/runs
-      - ./experiments:/app/experiments
-    environment:
-      - PYTHONUNBUFFERED=1
-      - PYTHONDONTWRITEBYTECODE=1
-    stdin_open: true
-    tty: true
-    command: tail -f /dev/null
-
   dev:
     container_name: dnn-dev
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     volumes:
       - ./data:/app/data
       - ./src:/app/src
