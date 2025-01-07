@@ -1,0 +1,40 @@
+// src/types/process.ts
+export interface ProcessData {
+  X_ActualPosition: string;
+  X_ActualVelocity: string;
+  X_ActualAcceleration: string;
+  X_SetPosition: string;
+  X_SetVelocity: string;
+  X_SetAcceleration: string;
+  X_CurrentFeedback: string;
+  X_DCBusVoltage: string;
+  X_OutputCurrent: string;
+  X_OutputVoltage: string;
+  Y_ActualPosition: string;
+  Y_ActualVelocity: string;
+  Y_ActualAcceleration: string;
+  Y_SetPosition: string;
+  Y_SetVelocity: string;
+  Y_SetAcceleration: string;
+  Y_CurrentFeedback: string;
+  Y_DCBusVoltage: string;
+  Y_OutputCurrent: string;
+  Y_OutputVoltage: string;
+  Z_ActualPosition: string;
+  Z_ActualVelocity: string;
+  Z_ActualAcceleration: string;
+  Z_SetPosition: string;
+  Z_SetVelocity: string;
+  Z_SetAcceleration: string;
+  Z_CurrentFeedback: string;
+  Z_DCBusVoltage: string;
+  Z_OutputCurrent: string;
+  Z_OutputVoltage: string;
+  M_CURRENT_PROGRAM_NUMBER: string;
+  M_sequence_number: string;
+  M_CURRENT_FEEDRATE: string;
+  Machining_Process: string;
+  timestamp: string;
+  result?: string;
+  id: string;
+}
