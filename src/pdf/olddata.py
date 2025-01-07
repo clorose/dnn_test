@@ -1,35 +1,25 @@
-# path: ~/Develop/dnn_test/src/pdf/olddata.py
+# path: D:\DNN_test\src\pdf\olddata.py
 import pandas as pd
 import numpy as np
 import glob
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
-# Keras 및 TensorFlow 관련 임포트 (3.11 기준 최신 버전에 맞게 변경)
-import datetime
+# Keras 및 TensorFlow 관련 임포트
 import os
-import sys
 import tensorflow as tf
-from tensorflow.keras.models import Model, Sequential
-from tensorflow.keras.optimizers import RMSprop, SGD, Adam
-from tensorflow.keras.callbacks import ModelCheckpoint, LearningRateScheduler, History
-from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten, Input
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.callbacks import (
+    ModelCheckpoint,
+    EarlyStopping,
+    LearningRateScheduler,
+)
+from tensorflow.keras.layers import Dense, Dropout, BatchNormalization
 from tensorflow.keras.utils import to_categorical
-from tensorflow.keras import initializers, regularizers, constraints, backend as K
-
-# For plotting
-import matplotlib.pyplot as plt
+from tensorflow.keras.regularizers import l2
 
 # Local modules
 from config import *
 from data_processor import tool_condition, item_inspection, machining_process
-
-# Set the path to the data(Docker)
-data_path = "/app/data"
-root_path = "/app/"
-
-# Set the path to the data(Local)
-# data_path = "../../data"
-# root_path = "../../"
 
 virtual_data_path = os.path.join(data_path, "CNC Virtual Data set _v2")
 run_data_path = os.path.join(root_path, "runs")
@@ -70,11 +60,6 @@ print("공정 중지된 샘플 개수 :", nb_defective)
 print("전체 샘플 개수 :", nb_pass + nb_pass_half + nb_defective)
 
 # Modifying train.csv for training
-# - [tool_condition] : unworn/worn -> 0 / 1
-# - [item_inspection] : machining_finalized & passed -> yes & yes / yes & no / no -> 0 / 1 / 2
-# - delete 'material' column and 'No' column
-
-# Assuming train_sample_np is already defined
 train_sample_info = np.array(train_sample_np.copy())
 
 # Apply user-defined functions
@@ -88,7 +73,6 @@ train_sample_info = np.delete(train_sample_info, 0, 1)
 train_sample_info = np.delete(train_sample_info, 0, 1)
 
 print(train_sample_info)
-
 print("train_sample_info shape:", train_sample_info.shape)
 print("Number of files:", len(all_files))
 print("First few rows of train_sample_info:\n", train_sample_info[:5])
@@ -135,7 +119,6 @@ print(data_pass_half.shape)
 print(data_fail.shape)
 
 # Modifying experiment data
-# - machining_process : From "Prep" to "End" -> 0~9
 data_pass = machining_process(data_pass)
 data_pass_half = machining_process(data_pass_half)
 data_fail = machining_process(data_fail)
@@ -172,64 +155,159 @@ print(Y_train)
 
 X_train = X_train.astype("float32")
 X_test = X_test.astype("float32")
-Y_train = to_categorical(Y_train, nb_classes)
-Y_test = to_categorical(Y_test, nb_classes)
+Y_train = to_categorical(Y_train, NB_CLASSES)
+Y_test = to_categorical(Y_test, NB_CLASSES)
 
 print(X_train.shape)
 print(X_test.shape)
 print(Y_train.shape)
 print(Y_test.shape)
 
-# Hidden unit sizes (128, 256, 512)
-units = [128, 256, 512]
-# Symmetric dropout rates
-drops = [0.1, 0.2, 0.3]
-
 model = Sequential()
 
 # Expansion layers (차원을 키워가는 층들)
-model.add(Dense(units[0], activation="relu", input_dim=48))
-model.add(Dropout(drops[0]))
-model.add(Dense(units[1], activation="relu"))
-model.add(Dropout(drops[1]))
-model.add(Dense(units[2], activation="relu"))
-model.add(Dropout(drops[2]))
+model.add(
+    Dense(
+        HIDDEN_UNITS[0],
+        activation=ACTIVATION,
+        input_dim=48,
+        # 
+        kernel_initializer=KERNEL_INITIALIZER,
+        kernel_regularizer=l2(L2_LAMBDA) if USE_L2_REG else None,
+    )
+)
+if USE_BATCH_NORM:
+    model.add(BatchNormalization())
+if USE_DROPOUT:
+    model.add(Dropout(DROPOUT_RATES[0]))
+
+model.add(
+    Dense(
+        HIDDEN_UNITS[1],
+        activation=ACTIVATION,
+        kernel_initializer=KERNEL_INITIALIZER,
+        kernel_regularizer=l2(L2_LAMBDA) if USE_L2_REG else None,
+    )
+)
+if USE_BATCH_NORM:
+    model.add(BatchNormalization())
+if USE_DROPOUT:
+    model.add(Dropout(DROPOUT_RATES[1]))
+
+model.add(
+    Dense(
+        HIDDEN_UNITS[2],
+        activation=ACTIVATION,
+        kernel_initializer=KERNEL_INITIALIZER,
+        kernel_regularizer=l2(L2_LAMBDA) if USE_L2_REG else None,
+    )
+)
+if USE_BATCH_NORM:
+    model.add(BatchNormalization())
+if USE_DROPOUT:
+    model.add(Dropout(DROPOUT_RATES[2]))
 
 # Reduction layers (차원을 줄여가는 층들)
-model.add(Dense(units[2], activation="relu"))
-model.add(Dropout(drops[2]))
-model.add(Dense(units[1], activation="relu"))
-model.add(Dropout(drops[1]))
-model.add(Dense(units[0], activation="relu"))
-model.add(Dropout(drops[0]))
-model.add(Dense(nb_classes, activation="softmax"))
+model.add(
+    Dense(
+        HIDDEN_UNITS[2],
+        activation=ACTIVATION,
+        kernel_initializer=KERNEL_INITIALIZER,
+        kernel_regularizer=l2(L2_LAMBDA) if USE_L2_REG else None,
+    )
+)
+if USE_BATCH_NORM:
+    model.add(BatchNormalization())
+if USE_DROPOUT:
+    model.add(Dropout(DROPOUT_RATES[2]))
+
+model.add(
+    Dense(
+        HIDDEN_UNITS[1],
+        activation=ACTIVATION,
+        kernel_initializer=KERNEL_INITIALIZER,
+        kernel_regularizer=l2(L2_LAMBDA) if USE_L2_REG else None,
+    )
+)
+if USE_BATCH_NORM:
+    model.add(BatchNormalization())
+if USE_DROPOUT:
+    model.add(Dropout(DROPOUT_RATES[1]))
+
+model.add(
+    Dense(
+        HIDDEN_UNITS[0],
+        activation=ACTIVATION,
+        kernel_initializer=KERNEL_INITIALIZER,
+        kernel_regularizer=l2(L2_LAMBDA) if USE_L2_REG else None,
+    )
+)
+if USE_BATCH_NORM:
+    model.add(BatchNormalization())
+if USE_DROPOUT:
+    model.add(Dropout(DROPOUT_RATES[0]))
+
+model.add(Dense(NB_CLASSES, activation="softmax"))
+
+# 콜백 설정
+callbacks = []
+
+if USE_EARLY_STOPPING:
+    callbacks.append(
+        EarlyStopping(
+            monitor=EARLY_STOPPING_MONITOR,
+            patience=EARLY_STOPPING_PATIENCE,
+            mode=EARLY_STOPPING_MODE,
+            restore_best_weights=EARLY_STOPPING_RESTORE_BEST,
+            min_delta = EARLY_STOPPING_MIN_DELTA
+        )
+    )
+
+if USE_LR_SCHEDULER:
+
+    def lr_schedule(epoch):
+        if epoch < LR_DECAY_STEPS[0]:
+            return LEARNING_RATE
+        elif epoch < LR_DECAY_STEPS[1]:
+            return LEARNING_RATE * LR_DECAY_RATES[0]
+        return LEARNING_RATE * LR_DECAY_RATES[1]
+
+    callbacks.append(LearningRateScheduler(lr_schedule))
 
 model_checkpoint = ModelCheckpoint(
-    "weight_CNC_binary.mat", monitor="val_acc", save_best_only=True
+    MODEL_CHECKPOINT_PATH,
+    monitor=MODEL_CHECKPOINT_MONITOR,
+    save_best_only=MODEL_CHECKPOINT_SAVE_BEST,
 )
-opt = Adam(lr)
-model.summary()
-model.compile(optimizer=opt, loss="binary_crossentropy", metrics=["accuracy"])
+callbacks.append(model_checkpoint)
 
-history = History()
+model.summary()
+model.compile(
+    optimizer=OPTIMIZER, loss="categorical_crossentropy", metrics=["accuracy"]
+)
 
 print("............model is defined............")
 
-model.fit(
+# 모델 학습 직전에 추가
+log_experiment_config(output_dir)
+
+# 모델 학습
+history = model.fit(
     X_train,
     Y_train,
     verbose=2,
-    batch_size=batch_size,
-    epochs=epochs,
-    validation_split=0.1,
+    batch_size=BATCH_SIZE,
+    epochs=EPOCHS,
+    validation_split=VALIDATION_SPLIT,
     shuffle=True,
-    callbacks=[history],
+    callbacks=callbacks,
 )
 
-loss_and_metrics = model.evaluate(X_train, Y_train, batch_size=32)
+# 모델 평가
+loss_and_metrics = model.evaluate(X_train, Y_train, EVAL_BATCH_SIZE)
 print("Training Data Evaluation: ", loss_and_metrics)
 
-loss_and_metrics2 = model.evaluate(X_test, Y_test, batch_size=32)
+loss_and_metrics2 = model.evaluate(X_test, Y_test, EVAL_BATCH_SIZE)
 print("Test Data Evaluation: ", loss_and_metrics2)
 
 # 학습 로그 저장
@@ -241,41 +319,5 @@ with open(log_file, "w") as f:
     f.write(f"Training Evaluation Metrics: {loss_and_metrics}\n")
     f.write(f"Test Evaluation Metrics: {loss_and_metrics2}\n")
 
-# 손실 그래프 저장
-plt.figure()
-plt.plot(history.history["val_loss"])
-plt.plot(history.history["loss"])
-plt.title("Loss During Training")
-plt.xlabel("Epoch")
-plt.ylabel("Loss")
-plt.legend(["Validation Loss", "Training Loss"])
-plt.savefig(os.path.join(output_dir, "loss.png"))
-plt.close()
-
-# 정확도 그래프 저장
-plt.figure()
-plt.plot(history.history["val_accuracy"])
-plt.plot(history.history["accuracy"])
-plt.title("Accuracy During Training")
-plt.xlabel("Epoch")
-plt.ylabel("Accuracy")
-plt.legend(["Validation Accuracy", "Training Accuracy"])
-plt.savefig(os.path.join(output_dir, "accuracy.png"))
-plt.close()
-
-plt.figure()
-plt.plot(history.history["val_loss"])
-plt.plot(history.history["loss"])
-plt.title("Loss During Training")
-plt.xlabel("Epoch")
-plt.ylabel("Loss")
-plt.legend(["Validation Loss", "Training Loss"])
-plt.savefig(f"loss_{timestamp}.png")
-plt.close()
-
-# 모델 저장 (TensorFlow SavedModel 형식)
-saved_model_path = os.path.join(output_dir, "saved_model")
-model.save(saved_model_path, save_format="tf")
-
-print(f"All results saved in: {output_dir}")
-print(f"Saved model in: {saved_model_path}")
+# 학습 결과 저장
+save_training_results(model, history, output_dir)
