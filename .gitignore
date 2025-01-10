@@ -620,3 +620,5 @@ src/result_*/
 zsh/
 runs/
 *.pdf
+*.db
+src/optuna_result/*
