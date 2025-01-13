@@ -1,6 +1,38 @@
-// path: frontend/src/pages/mainPage/mainPage.tsx
+// path: frontend/src/pages/mainPage/MainPage.tsx
 import { useRef, useState, useCallback, useEffect } from "react";
 import { useProcessMonitoring } from "../../hooks/useProcessMonitoring";
+import { useResultStatus } from "../../hooks/useResultStatus";
+
+interface ResultCellProps {
+  result: string | undefined;
+  idx: number;
+}
+
+const ResultCell = ({ result, idx }: ResultCellProps) => {
+  const { label, dotColor, textColor } = useResultStatus(result ?? "0");
+
+  return (
+    <td
+      className={`
+        sticky right-0 px-6 py-4 whitespace-nowrap font-medium border-l shadow-l
+        ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}
+        hover:bg-blue-50
+      `}
+    >
+      <div className="flex items-center gap-2">
+        <div className={`w-3 h-3 rounded-full ${dotColor}`} />
+        <span className={textColor}>{`${label} (${result})`}</span>
+      </div>
+    </td>
+  );
+};
+
+const formatColumnHeader = (col: string): string => {
+  return col
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+};
 
 const MainPage = () => {
   const { isConnected, setIsConnected, processData } = useProcessMonitoring();
@@ -11,11 +43,8 @@ const MainPage = () => {
     if (!tableRef.current) return;
 
     const { scrollTop, scrollHeight, clientHeight } = tableRef.current;
-    if (scrollHeight - scrollTop - clientHeight > 50) {
-      setAutoScroll(false);
-    } else {
-      setAutoScroll(true);
-    }
+    const isNearBottom = scrollHeight - scrollTop - clientHeight <= 50;
+    setAutoScroll(isNearBottom);
   }, []);
 
   useEffect(() => {
@@ -24,33 +53,30 @@ const MainPage = () => {
     }
   }, [processData, autoScroll]);
 
-  const formatColumnHeader = (col: string): string => {
-    return col
-      .split("_")
-      .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
-      .join(" ");
-  };
-
   return (
     <div className="flex items-center justify-center w-screen h-screen bg-gray-100">
       <div className="w-[90vw] h-[95vh] bg-white rounded-lg shadow-lg overflow-hidden">
+        {/* Header */}
         <div className="h-16 px-6 bg-white border-b flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-800">
             CNC 공정 불량진단 데이터 모니터링
           </h1>
           <button
-            className={`px-6 py-2 rounded-lg font-medium transition-colors shadow-sm
+            className={`
+              px-6 py-2 rounded-lg font-medium transition-colors shadow-sm
               ${
                 isConnected
                   ? "bg-green-500 hover:bg-green-600 text-white"
                   : "bg-red-500 hover:bg-red-600 text-white"
-              }`}
+              }
+            `}
             onClick={() => setIsConnected(!isConnected)}
           >
             {isConnected ? "가동중" : "가동 중지"}
           </button>
         </div>
 
+        {/* Table Container */}
         <div className="p-6 h-[calc(100%-4rem)]">
           <div className="bg-white rounded-lg border h-full overflow-hidden">
             <div className="relative h-full">
@@ -106,30 +132,7 @@ const MainPage = () => {
                                 : value}
                             </td>
                           ))}
-                        <td
-                          className={`
-                            sticky right-0 px-6 py-4 whitespace-nowrap font-medium border-l shadow-l
-                            ${
-                              // row.result && parseFloat(row.result) >= 0.5
-                              row.result?.startsWith("합격")
-                                ? "text-green-600"
-                                : "text-red-600"
-                            }
-                            ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}
-                            hover:bg-blue-50
-                          `}
-                        >
-                          <div className="flex items-center gap-2">
-                            <div
-                              className={`w-3 h-3 rounded-full ${
-                                row.result?.startsWith("합격")
-                                  ? "bg-green-500"
-                                  : "bg-red-500"
-                              }`}
-                            />
-                            {row.result}
-                          </div>
-                        </td>
+                        <ResultCell result={row.result} idx={idx} />
                       </tr>
                     ))}
                   </tbody>
