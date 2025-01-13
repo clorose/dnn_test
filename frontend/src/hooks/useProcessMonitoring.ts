@@ -18,8 +18,7 @@ export const useProcessMonitoring = () => {
         ...response.data,
         id: crypto.randomUUID(),
         timestamp: new Date().toISOString(),
-        // result: (+response.prediction).toFixed(2),
-        result: `${response.prediction >= "0.5" ? "합격" : "불합격"}(${(+response.prediction).toFixed(2)})`,
+        result: (+response.prediction).toFixed(2),
       };
 
       setProcessData((prev) => [...prev, newData].slice(-100));
