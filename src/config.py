@@ -1,4 +1,4 @@
-# path: ~/Develop/dnn_test/src/pdf/config.py
+# path: ~/Develop/dnn_test/src/config.py
 # === Imports ===
 import os
 import sys
@@ -40,24 +40,24 @@ os.makedirs(output_dir, exist_ok=True)
 
 # === 모델 설정 ===
 # 기본 정규화 기법
-USE_BATCH_NORM = True    # 활성화 (과적합 방지와 학습 안정화를 위해)
-USE_DROPOUT = True       # 유지 (현재도 좋은 결과를 보임)
-USE_L2_REG = True       # 활성화 (추가적인 정규화 효과를 위해)
+USE_BATCH_NORM = True  # 활성화 (과적합 방지와 학습 안정화를 위해)
+USE_DROPOUT = True  # 유지 (현재도 좋은 결과를 보임)
+USE_L2_REG = True  # 활성화 (추가적인 정규화 효과를 위해)
 
 # 학습 최적화 기법
-USE_EARLY_STOPPING = True     # 유지 (현재도 잘 작동)
-USE_LR_SCHEDULER = True       # 활성화 (학습률 동적 조정을 위해)
-USE_HE_INIT = True           # 활성화 (ReLU 활성화 함수와 잘 맞음)
+USE_EARLY_STOPPING = True  # 유지 (현재도 잘 작동)
+USE_LR_SCHEDULER = True  # 활성화 (학습률 동적 조정을 위해)
+USE_HE_INIT = True  # 활성화 (ReLU 활성화 함수와 잘 맞음)
 
 # 추가 기법
-USE_LABEL_SMOOTHING = True    # 활성화 (과적합 방지에 도움)
-USE_CROSS_VAL = False        # 비활성화 유지 (현재 검증 세트로 충분)
+USE_LABEL_SMOOTHING = True  # 활성화 (과적합 방지에 도움)
+USE_CROSS_VAL = False  # 비활성화 유지 (현재 검증 세트로 충분)
 
 # 모델 학습 관련 하이퍼파라미터
 NB_CLASSES = 2
 BATCH_SIZE = 1024
 EPOCHS = 300
-LEARNING_RATE = 1e-4
+LEARNING_RATE = 1e-5
 OPTIMIZER = Adam(LEARNING_RATE)
 VALIDATION_SPLIT = 0.1
 EVAL_BATCH_SIZE = 32

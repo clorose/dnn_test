@@ -1,4 +1,4 @@
-# path: ~/Develop/dnn_test/src/pdf/data_processor.py
+# path: D:\DNN_test\src\data_processor.py
 def tool_condition(input):
     for i in range(len(input)):
         if input[i, 4] == "unworn":
