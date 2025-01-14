@@ -20,12 +20,12 @@ from tensorflow.keras.regularizers import l2
 from config import *
 from data_processor import tool_condition, item_inspection, machining_process
 
-virtual_data_path = os.path.join(data_path, "CNC Virtual Data set _v2")
+virtual_data_path = os.path.join(data_path, "CNC_SMART_MICHIGAN")
 run_data_path = os.path.join(root_path, "runs")
 
 # Load train.csv
 train_sample = pd.read_csv(
-    os.path.join(data_path, "train.csv"), header=0, encoding="utf-8"
+    os.path.join(virtual_data_path, "train.csv"), header=0, encoding="utf-8"
 )
 
 # Get All experiment files
