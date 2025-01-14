@@ -1,3 +1,45 @@
+# 프로젝트 실행 가이드
+
+- 도커에 대해 잘 모르는 경우 [도커 가이드](https://github.com/clorose/docker) 를 참고하세요.
+
+## 도커 설치
+
+- **Windows** 에서 Docker 설치를 위해 WSL2 설치 필요
+- 설치법은 [Docker Desktop 설치](https://docs.docker.com/desktop/install/) 를 참고하세요.
+
+## 필수 파일 
+
+이 도커를 실행하기 위해선 다음 파일이 필요함:
+- [ ] `zsh/` 디렉토리(p10k, zshrc 설정 파일)
+- [ ] `data/` 디렉토리(내부 데이터 파일)
+- [ ] `requirements.txt` 파일(파이썬 패키지 설치 파일)
+- [ ] `.project_root` 파일(프로젝트 루트 디렉토리 설정 파일)
+
+[필수 파일](https://drive.google.com/drive/folders/1Upm2IqMFXcjj1bIKIsR7CUpoEo4Zrl9f?usp=sharing)
+
+- `data/` 디렉토리에는 데이터 파일이 있어야 함
+  - `train.csv`
+  - `CNC Virtual Data set _v2/` 디렉토리 내부에 데이터 파일들
+- `zsh/` 디렉토리에 p10k 테마 설정 파일
+- `MesloLGS NF` 폰트 설치는 선택 사항(단 `zsh` 테마 설정에 필요함)
+
+### 폰트 설정
+1. VS Code 설정 열기: `Ctrl + ,` 
+2. 'terminal font' 검색
+3. `Terminal > Integrated: Font Family` 설정에서 다음과 같이 입력:
+   - `MesloLGM Nerd Font Mono` 또는 `MesloLGS NF Regular` 입력
+
+## 도커 컴포즈 빌드 및 실행
+
+- 현재 도커 컴포즈는 `dev` 환경을 사용하도록 설정되어 있음(compose 파일 참고)
+- 이 환경에서는 `tail -f /dev/null` 명령어를 통해 컨테이너가 종료되지 않도록 설정되어 있음
+
+- 실행하기 위해선 빌드가 필요함
+- **최초 빌드** 또는 **변경사항**이 있을 때는 `--build` 옵션을 사용하여 빌드해야 함
+
+```bash
+docker compose up --build dev
+```
 # CNC DNN 프로젝트 문서
 
 ## 프로젝트 소개
@@ -72,6 +114,17 @@
    - 기본 환경 구성
    - 약 5-10분 소요될 수 있음
 
+빌드 이후엔 다음 명령어로 실행 가능함:
+```bash
+docker compose up dev
+```
+
+## 도커 진입
+
+- 현재 `tail -f /dev/null` 명령어로 컨테이너가 실행되고 있기 때문에 다른 터미널을 열어 진입해야 함
+- 컨테이너 이름은 `docker compose ps` 명령어로 확인 가능함
+- `zsh` 대신 `bash` 또는 `sh` 등을 사용할 수 있지만, `zsh`를 사용하는 것을 권장함
+- 만약 테마 설정이 마음에 안들면 bash로 실행하면 됨
 2. 이후 실행 시:
    ```bash
    docker compose up dev
@@ -114,6 +167,31 @@
 기본 설정 또는 사용자 정의 설정으로 모델을 학습시킬 수 있습니다.
 
 ```bash
+docker exec -it "컨테이너 이름" zsh
+```
+
+또는
+
+```bash
+docker exec -it "컨테이너 이름" bash
+```
+
+## 실행
+
+컨테이너 진입 후:
+1. `src/` 디렉토리로 이동하여 실행 (`cd src/`)
+2. Python 파일 실행: `python3 "파일 이름"`
+
+* 코드들은 `src/` 디렉토리에 위치함
+* `docker-compose.yml` 파일에서 `src/` 디렉토리를 볼륨으로 설정했기 때문에 코드 변경이 자동으로 반영됨
+* 일반 터미널처럼 사용 가능
+* 컨테이너 쉘에서 나갈 때는 `Ctrl + D` 사용
+
+## 컨테이너 종료
+
+컨테이너를 종료하는 방법은 두 가지가 있음:
+
+1. `docker compose down dev` 명령어 사용 (권장)
 cd src
 python main.py --config "../experiments/base.yaml"
 ```
@@ -256,6 +334,12 @@ python run_bayesian_opt.py --config "../experiments/base.yaml" --n_trials 20
 
 ## 환경 관리
 ```bash
+docker compose up dev
+```
+
+## 프로젝트 주의사항
+
+- `src/` 디렉토리에 코드를 작성해야 함(볼륨 설정을 통해 자동 반영, 다른 디렉토리 사용 시 재빌드 필요)
 # 환경 목록 확인
 conda env list
 
