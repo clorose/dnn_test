@@ -620,3 +620,4 @@ src/result_*/
 zsh/
 runs/
 *.pdf
+*.db
