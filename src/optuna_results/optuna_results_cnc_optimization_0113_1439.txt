@@ -1,0 +1,23 @@
+Best trial results:
+
+Value: 0.9981876015663147
+
+Best hyperparameters:
+batch_size: 256
+learning_rate: 8.630413157111233e-05
+lr_scheduler: False
+batch_norm: False
+he_init: False
+l2_lambda: 0.006821145636231507
+n_encoder_layers: 1
+first_units: 64
+middle_units: 512
+dropout_rate1: 0.5239716574906559
+use_early_stopping: True
+early_stopping_patience: 11
+early_stopping_monitor: val_accuracy
+
+Best trial metrics:
+Best validation accuracy: 0.0000
+Final training accuracy: 0.7179
+Test accuracy: 0.9982

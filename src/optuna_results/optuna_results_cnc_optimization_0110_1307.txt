@@ -1,0 +1,26 @@
+Best trial results:
+
+Value: 0.972209632396698
+
+Best hyperparameters:
+batch_size: 1024
+learning_rate: 2.3689005995136607e-05
+lr_scheduler: True
+batch_norm: False
+he_init: True
+l2_reg: False
+n_encoder_layers: 3
+first_units: 128
+middle_units: 256
+dropout_rate1: 0.45307834836653715
+dropout_rate_enc_2: 0.3607671892037602
+dropout_rate_enc_3: 0.3967286468858623
+dropout_rate_dec_1: 0.5838848875976448
+dropout_rate_dec_2: 0.5187926463383028
+lr_decay_rate: 0.48553012540182594
+lr_decay_steps: 41
+
+Best trial metrics:
+Best validation accuracy: 1.0000
+Final training accuracy: 0.6069
+Test accuracy: 0.9722
