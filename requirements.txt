@@ -10,3 +10,9 @@ protobuf==4.25.5
 seaborn==0.13.2
 PyYAML==6.0.2
 scikit-optimize==0.10.2
+
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic
+aiohttp
