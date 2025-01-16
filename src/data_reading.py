@@ -1,3 +1,4 @@
+# path: D:\DNN_test\src\data_reading.py
 from __future__ import print_function
 
 import os, sys, math, copy

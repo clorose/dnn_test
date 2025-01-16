@@ -55,15 +55,15 @@ USE_CROSS_VAL = False  # 비활성화 유지 (현재 검증 세트로 충분)
 
 # 모델 학습 관련 하이퍼파라미터
 NB_CLASSES = 2
-BATCH_SIZE = 1024
+BATCH_SIZE = 512
 EPOCHS = 300
-LEARNING_RATE = 1e-5
+LEARNING_RATE = 2e-4
 OPTIMIZER = Adam(LEARNING_RATE)
-VALIDATION_SPLIT = 0.1
+VALIDATION_SPLIT = 0.15
 EVAL_BATCH_SIZE = 32
 
 # 모델 구조 관련 설정
-DROPOUT_RATES = [0.1, 0.2, 0.3] if USE_DROPOUT else [0, 0, 0]
+DROPOUT_RATES = [0.3, 0.4, 0.5] if USE_DROPOUT else [0, 0, 0]
 HIDDEN_UNITS = [128, 256, 512]
 KERNEL_INITIALIZER = "he_normal" if USE_HE_INIT else "glorot_uniform"
 ACTIVATION = "relu"
@@ -82,10 +82,10 @@ EARLY_STOPPING_PATIENCE = 20
 EARLY_STOPPING_MONITOR = "val_accuracy"
 EARLY_STOPPING_MODE = "max"
 EARLY_STOPPING_RESTORE_BEST = True
-EARLY_STOPPING_MIN_DELTA = 0.001  # 0.1% 미만의 개선은 개선으로 보지 않음
+EARLY_STOPPING_MIN_DELTA = 0.005  # 0.5% 미만의 개선은 개선으로 보지 않음
 
 # Learning Rate 설정
-LR_DECAY_STEPS = [100, 150]  # epoch 기준
+LR_DECAY_STEPS = [30, 70]  # epoch 기준
 LR_DECAY_RATES = [0.5, 0.1]  # 각 step에서의 감소율
 
 # Cross Validation 설정
