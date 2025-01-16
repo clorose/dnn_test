@@ -3,7 +3,7 @@ import { ProcessData } from '../types/process';
 import { ServerResponse } from '../types/api';
 import ky from 'ky';
 
-const INITIAL_URL = "http://192.168.110.47:8080/api/process-data";
+const INITIAL_URL = "https://3c48-121-146-68-125.ngrok-free.app:8080/api/process-data";
 const REMOTE_URL = "http://localhost:8080/api/process-data";
 // const REMOTE_URL = "http://192.168.110.47:8080/api/process-data";
 
