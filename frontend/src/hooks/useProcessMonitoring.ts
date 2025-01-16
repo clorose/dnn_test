@@ -4,7 +4,7 @@ import { ServerResponse } from '../types/api';
 import ky from 'ky';
 
 const LOCAL_URL = "http://localhost:8080/api/process-data";
-const REMOTE_URL = "http://your-ip-address/api/process-data";
+const REMOTE_URL = "http://192.168.110.47/api/process-data";
 
 export const useProcessMonitoring = () => {
   const [isConnected, setIsConnected] = useState<boolean>(false);
