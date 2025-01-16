@@ -3,13 +3,14 @@ import { ProcessData } from '../types/process';
 import { ServerResponse } from '../types/api';
 import ky from 'ky';
 
-const LOCAL_URL = "http://localhost:8080/api/process-data";
-const REMOTE_URL = "http://192.168.110.47:8080/api/process-data";
+const INITIAL_URL = "http://192.168.110.47:8080/api/process-data";
+const REMOTE_URL = "http://localhost:8080/api/process-data";
+// const REMOTE_URL = "http://192.168.110.47:8080/api/process-data";
 
 export const useProcessMonitoring = () => {
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [processData, setProcessData] = useState<ProcessData[]>([]);
-  const [currentEndpoint, setCurrentEndpoint] = useState<string>(LOCAL_URL);
+  const [currentEndpoint, setCurrentEndpoint] = useState<string>(INITIAL_URL);
 
   const fetchProcessData = useCallback(async () => {
     try {
@@ -30,7 +31,7 @@ export const useProcessMonitoring = () => {
       console.error(`Failed to fetch from ${currentEndpoint}:`, error);
       
       // 현재 엔드포인트가 실패하면 다른 엔드포인트로 전환
-      const fallbackUrl = currentEndpoint === LOCAL_URL ? REMOTE_URL : LOCAL_URL;
+      const fallbackUrl = currentEndpoint === INITIAL_URL ? REMOTE_URL : INITIAL_URL;
       
       try {
         const fallbackResponse = await ky
