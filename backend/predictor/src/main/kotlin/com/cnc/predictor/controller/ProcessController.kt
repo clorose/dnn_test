@@ -18,7 +18,7 @@ class ProcessController(private val csvService: CsvService) {
     private val logger = LoggerFactory.getLogger(javaClass)
     private val client = WebClient.builder().baseUrl("http://localhost:8000").defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).build()
     
-    @GetMapping("/process-data", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping("/process-data")
     fun getProcessData(): ResponseEntity<Map<String, Any>> {
         val processData = csvService.getNextData() ?: return ResponseEntity.ok(mapOf(
                 "status" to "error",

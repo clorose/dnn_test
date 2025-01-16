@@ -36,7 +36,6 @@ class SecurityConfig {
             allowedOrigins = listOf("*")
             allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
             allowedHeaders = listOf("*")
-            exposedHeaders = listOf("Content-Type")
             allowCredentials = false
             maxAge = 3600L
         }
