@@ -3,9 +3,8 @@ import { ProcessData } from '../types/process';
 import { ServerResponse } from '../types/api';
 import ky from 'ky';
 
-const INITIAL_URL = "https://3c48-121-146-68-125.ngrok-free.app/api/process-data";
+const INITIAL_URL = "https://079d-121-146-68-125.ngrok-free.app/api/process-data";  // 새 URL로 업데이트
 const REMOTE_URL = "http://localhost:8080/api/process-data";
-// const REMOTE_URL = "http://192.168.110.47:8080/api/process-data";
 
 export const useProcessMonitoring = () => {
   const [isConnected, setIsConnected] = useState<boolean>(false);
@@ -14,10 +13,16 @@ export const useProcessMonitoring = () => {
 
   const fetchProcessData = useCallback(async () => {
     try {
-      // 현재 설정된 엔드포인트로 시도
-      const response = await ky
-        .get(currentEndpoint)
-        .json<ServerResponse>();
+      const response = await ky.get(currentEndpoint, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        timeout: 5000,
+      }).json<ServerResponse>();
+
+      // 응답이 성공적이면 isConnected를 true로 설정
+      setIsConnected(true);
 
       const newData = {
         ...response.data,
@@ -34,9 +39,15 @@ export const useProcessMonitoring = () => {
       const fallbackUrl = currentEndpoint === INITIAL_URL ? REMOTE_URL : INITIAL_URL;
       
       try {
-        const fallbackResponse = await ky
-          .get(fallbackUrl)
-          .json<ServerResponse>();
+        const fallbackResponse = await ky.get(fallbackUrl, {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          timeout: 5000,
+        }).json<ServerResponse>();
+
+        setIsConnected(true);
 
         const newData = {
           ...fallbackResponse.data,
@@ -46,7 +57,7 @@ export const useProcessMonitoring = () => {
         };
 
         setProcessData((prev) => [...prev, newData].slice(-100));
-        setCurrentEndpoint(fallbackUrl); // 성공한 엔드포인트로 변경
+        setCurrentEndpoint(fallbackUrl);
       } catch (fallbackError) {
         console.error("Both endpoints failed:", fallbackError);
         setIsConnected(false);
@@ -71,6 +82,6 @@ export const useProcessMonitoring = () => {
     isConnected, 
     setIsConnected, 
     processData,
-    currentEndpoint,  // 현재 사용 중인 엔드포인트 정보도 반환
+    currentEndpoint,
   };
 };
