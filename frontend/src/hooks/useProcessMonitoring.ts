@@ -3,7 +3,7 @@ import { ProcessData } from '../types/process';
 import { ServerResponse } from '../types/api';
 import ky from 'ky';
 
-const INITIAL_URL = "https://079d-121-146-68-125.ngrok-free.app/api/process-data";  // 새 URL로 업데이트
+const INITIAL_URL = "https://7aba-121-146-68-125.ngrok-free.app/api/process-data";  // 새 URL로 업데이트
 const REMOTE_URL = "http://localhost:8080/api/process-data";
 
 export const useProcessMonitoring = () => {
