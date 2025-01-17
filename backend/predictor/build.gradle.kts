@@ -34,8 +34,6 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("org.springframework.boot:spring-boot-starter-websocket")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-  implementation("org.eclipse.milo:sdk-client:0.6.11")
-	implementation("org.eclipse.milo:sdk-server:0.6.11")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
