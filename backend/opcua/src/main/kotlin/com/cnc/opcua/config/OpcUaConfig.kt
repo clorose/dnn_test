@@ -1,3 +1,4 @@
+// path: test/backend/opcua/src/main/kotlin/com/cnc/opcua/config/OpcUaConfig.kt
 package com.cnc.opcua.config
 
 import com.cnc.opcua.server.OpcUaServer
@@ -22,7 +23,8 @@ class OpcUaConfig {
             println("Starting OPC UA Server...")
             server.startup()
             
-            Thread.sleep(1000)  // Give server time to start
+            // 서버 시작 대기 시간 증가
+            Thread.sleep(2000)
             
             println("Connecting OPC UA Client...")
             client.connect()

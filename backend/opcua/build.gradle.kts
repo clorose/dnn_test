@@ -30,9 +30,9 @@ dependencies {
     // OPC UA
     implementation("org.eclipse.milo:sdk-client:0.6.11")
     implementation("org.eclipse.milo:sdk-server:0.6.11")
-		implementation("org.eclipse.milo:stack-core:0.6.11")
+	implementation("org.eclipse.milo:stack-core:0.6.11")
 
-		// Add JAXB dependencies
+	// Add JAXB dependencies
     implementation("javax.xml.bind:jaxb-api:2.3.1")
     implementation("org.glassfish.jaxb:jaxb-runtime:2.3.1")
     implementation("com.sun.activation:javax.activation:1.2.0")
@@ -45,9 +45,12 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-		// Retry
-		implementation("org.springframework.retry:spring-retry:2.0.0")
+	// Retry
+	implementation("org.springframework.retry:spring-retry:2.0.0")
     implementation("org.springframework.boot:spring-boot-starter-aop")
+
+    // CSV 
+    implementation("com.opencsv:opencsv:5.7.1")  // CSV 파일 읽기 위해
 }
 
 kotlin {

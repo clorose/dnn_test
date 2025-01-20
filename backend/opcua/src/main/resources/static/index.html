@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en" xml:lang="en">
+
+<head>
+  <title>CNC OPC UA Monitor</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    .status-container {
+      background: white;
+      border-radius: 8px;
+      padding: 24px;
+      margin: 20px 0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .status-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      margin: 8px 0;
+      padding: 8px;
+      border-radius: 4px;
+      background: #f8f9fa;
+    }
+
+    .status-label {
+      font-weight: 500;
+      min-width: 120px;
+    }
+
+    .status-value {
+      color: #2563eb;
+      font-weight: 500;
+    }
+
+    .data-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .axis-container {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .axis-title {
+      font-size: 1.2em;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #1e3a8a;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    th {
+      background-color: #f3f4f6;
+      font-weight: 500;
+    }
+
+    .value-cell {
+      font-family: monospace;
+      color: #2563eb;
+    }
+
+    .refresh-time {
+      color: #6b7280;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>CNC OPC UA Monitor</h1>
+
+  <div class="status-container">
+    <div class="status-header">
+      <div>
+        <div class="status-item">
+          <span class="status-label">Server Status:</span>
+          <span class="status-value" id="serverStatus">Checking...</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Client Status:</span>
+          <span class="status-value" id="clientStatus">Checking...</span>
+        </div>
+      </div>
+      <div class="refresh-time">
+        Last Updated: <span id="lastUpdated">-</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="data-grid">
+    <!-- X Axis Data -->
+    <div class="axis-container">
+      <div class="axis-title">X Axis</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody id="xAxisData">
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Y Axis Data -->
+    <div class="axis-container">
+      <div class="axis-title">Y Axis</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody id="yAxisData">
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Z Axis Data -->
+    <div class="axis-container">
+      <div class="axis-title">Z Axis</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody id="zAxisData">
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Spindle Data -->
+    <div class="axis-container">
+      <div class="axis-title">Spindle</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody id="spindleData">
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Machine Data -->
+    <div class="axis-container" style="grid-column: span 2;">
+      <div class="axis-title">Machine Status</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody id="machineData">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const formatValue = (value) => {
+      if (typeof value === 'number') {
+        return value.toFixed(3);
+      }
+      return value;
+    };
+
+    const updateTableData = (data, axis) => {
+      const tbody = document.getElementById(`${axis}Data`);
+      tbody.innerHTML = '';
+
+      Object.entries(data)
+        .filter(([key]) => key.startsWith(axis.toUpperCase()))
+        .forEach(([key, value]) => {
+          const tr = document.createElement('tr');
+          const paramName = key.split('_').slice(1).join('_');
+          tr.innerHTML = `
+            <td>${paramName}</td>
+            <td class="value-cell">${formatValue(value)}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+    };
+
+    const updateMachineData = (data) => {
+      const tbody = document.getElementById('machineData');
+      tbody.innerHTML = '';
+
+      Object.entries(data)
+        .filter(([key]) => key.startsWith('M_'))
+        .forEach(([key, value]) => {
+          const tr = document.createElement('tr');
+          const paramName = key.split('_').slice(1).join('_');
+          tr.innerHTML = `
+            <td>${paramName}</td>
+            <td class="value-cell">${value}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+    };
+
+    async function updateStatus() {
+      try {
+        const response = await fetch('/api/status');
+        const data = await response.json();
+
+        document.getElementById('serverStatus').textContent = data.serverStatus;
+        document.getElementById('clientStatus').textContent = data.clientStatus;
+        document.getElementById('lastUpdated').textContent =
+          new Date(data.timestamp).toLocaleString();
+
+        if (data.processData) {
+          updateTableData(data.processData, 'x');
+          updateTableData(data.processData, 'y');
+          updateTableData(data.processData, 'z');
+          updateTableData(data.processData, 's');
+          updateMachineData(data.processData);
+        }
+      } catch (error) {
+        console.error('Failed to fetch status:', error);
+      }
+    }
+
+    // Update status every 2 seconds
+    setInterval(updateStatus, 2000);
+
+    // Initial update
+    updateStatus();
+  </script>
+</body>
+
+</html>
