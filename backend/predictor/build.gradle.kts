@@ -56,7 +56,15 @@ dependencies {
     // 어노테이션 프로세서
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-    // 테스트
+    // OPC UA Dependencies (from Eclipse Milo)
+    implementation("org.eclipse.milo:sdk-client:0.6.11")
+    implementation("org.eclipse.milo:sdk-server:0.6.11")
+    implementation("org.eclipse.milo:stack-core:0.6.11")
+
+    // OPC UA project dependency
+    implementation("com.cnc:opcua:0.0.1-SNAPSHOT")
+
+    // Test Dependencies
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
