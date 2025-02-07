@@ -34,20 +34,17 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-websocket")
-		implementation("org.springframework.boot:spring-boot-autoconfigure")
+    implementation("org.springframework.boot:spring-boot-autoconfigure")
 
-    // Kotlin 관련
+    // Kotlin & Reactor
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-
-    // Reactor
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 
     // 유틸리티
     implementation("com.opencsv:opencsv:5.7.1")
-    implementation("org.eclipse.milo:sdk-client:0.6.6")
 
     // 개발 도구
     developmentOnly("org.springframework.boot:spring-boot-devtools")
