@@ -1,0 +1,6 @@
+{
+  "watch": ["src", "app.js", ".env"],
+  "ext": "js,json",
+  "legacyWatch": true,
+  "verbose": true
+}
