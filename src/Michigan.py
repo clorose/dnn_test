@@ -162,32 +162,32 @@ class CNCDataProcessor:
         if USE_DROPOUT:
             model.add(Dropout(DROPOUT_RATES[1]))
 
-        # model.add(
-        #     Dense(
-        #         HIDDEN_UNITS[2],
-        #         activation=ACTIVATION,
-        #         kernel_initializer=KERNEL_INITIALIZER,
-        #         kernel_regularizer=l2(L2_LAMBDA) if USE_L2_REG else None,
-        #     )
-        # )
-        # if USE_BATCH_NORM:
-        #     model.add(BatchNormalization())
-        # if USE_DROPOUT:
-        #     model.add(Dropout(DROPOUT_RATES[2]))
+        model.add(
+            Dense(
+                HIDDEN_UNITS[2],
+                activation=ACTIVATION,
+                kernel_initializer=KERNEL_INITIALIZER,
+                kernel_regularizer=l2(L2_LAMBDA) if USE_L2_REG else None,
+            )
+        )
+        if USE_BATCH_NORM:
+            model.add(BatchNormalization())
+        if USE_DROPOUT:
+            model.add(Dropout(DROPOUT_RATES[2]))
 
-        # # Reduction layers
-        # model.add(
-        #     Dense(
-        #         HIDDEN_UNITS[2],
-        #         activation=ACTIVATION,
-        #         kernel_initializer=KERNEL_INITIALIZER,
-        #         kernel_regularizer=l2(L2_LAMBDA) if USE_L2_REG else None,
-        #     )
-        # )
-        # if USE_BATCH_NORM:
-        #     model.add(BatchNormalization())
-        # if USE_DROPOUT:
-        #     model.add(Dropout(DROPOUT_RATES[2]))
+        # Reduction layers
+        model.add(
+            Dense(
+                HIDDEN_UNITS[2],
+                activation=ACTIVATION,
+                kernel_initializer=KERNEL_INITIALIZER,
+                kernel_regularizer=l2(L2_LAMBDA) if USE_L2_REG else None,
+            )
+        )
+        if USE_BATCH_NORM:
+            model.add(BatchNormalization())
+        if USE_DROPOUT:
+            model.add(Dropout(DROPOUT_RATES[2]))
 
         model.add(
             Dense(
