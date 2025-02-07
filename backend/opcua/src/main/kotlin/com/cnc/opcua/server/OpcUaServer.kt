@@ -1,3 +1,4 @@
+// path: test/backend/opcua/src/main/kotlin/com/cnc/opcua/server/OpcUaServer.kt
 package com.cnc.opcua.server
 
 import com.opencsv.CSVReader
