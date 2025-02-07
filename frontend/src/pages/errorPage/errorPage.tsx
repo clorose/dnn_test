@@ -96,16 +96,14 @@ const ErrorPage = () => {
               </h1>
               <p className="text-green-400 text-2xl font-mono">
                 <span
-                  className={`inline-block transition-opacity duration-300 ${
-                    isHovered ? "opacity-0" : "opacity-100"
-                  }`}
+                  className={`inline-block transition-opacity duration-300 ${isHovered ? "opacity-0" : "opacity-100"
+                    }`}
                 >
                   페이지를 찾을 수 없습니다
                 </span>
                 <span
-                  className={`absolute left-0 right-0 transition-opacity duration-300 ${
-                    isHovered ? "opacity-100" : "opacity-0"
-                  }`}
+                  className={`absolute left-0 right-0 transition-opacity duration-300 ${isHovered ? "opacity-100" : "opacity-0"
+                    }`}
                 >
                   Follow the white rabbit...
                 </span>
