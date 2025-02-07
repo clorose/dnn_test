@@ -64,10 +64,9 @@ const MainPage = () => {
           <button
             className={`
               px-6 py-2 rounded-lg font-medium transition-colors shadow-sm
-              ${
-                isConnected
-                  ? "bg-green-500 hover:bg-green-600 text-white"
-                  : "bg-red-500 hover:bg-red-600 text-white"
+              ${isConnected
+                ? "bg-green-500 hover:bg-green-600 text-white"
+                : "bg-red-500 hover:bg-red-600 text-white"
               }
             `}
             onClick={() => setIsConnected(!isConnected)}
@@ -127,7 +126,7 @@ const MainPage = () => {
                               className="px-6 py-4 whitespace-nowrap"
                             >
                               {typeof value === "number" &&
-                              !Number.isInteger(value)
+                                !Number.isInteger(value)
                                 ? value.toFixed(4)
                                 : value}
                             </td>
