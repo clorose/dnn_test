@@ -23,8 +23,11 @@ app.add_middleware(
 )
 
 # Docker 환경의 경로를 사용하여 AI 모델 로드
-MODEL_PATH = os.path.join(root_path, "runs", "0115_1034", "saved_model")
-SCALER_PATH = os.path.join(root_path, "runs", "0115_1034", "minmax_scaler.joblib")
+# MODEL_PATH = os.path.join(root_path, "runs", "0115_1034", "saved_model")
+# SCALER_PATH = os.path.join(root_path, "runs", "0115_1034", "minmax_scaler.joblib")
+# /mnt/d/DNN_test/src/api/saved_model
+MODEL_PATH = os.path.join(root_path, "src", "api", "saved_model")
+SCALER_PATH = os.path.join(root_path, "src", "api", "minmax_scaler.joblib") 
 
 model = tf.keras.models.load_model(MODEL_PATH)
 scaler = joblib.load(SCALER_PATH)

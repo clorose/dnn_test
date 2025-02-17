@@ -1,4 +1,4 @@
-// 가로 막대 그래프를 위한 바 컴포넌트
+// path: frontend/src/pages/graphPage/components/CustomBar.tsx
 interface BarProps {
   x?: number;
   y?: number;

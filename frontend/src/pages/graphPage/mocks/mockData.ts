@@ -1,3 +1,4 @@
+// path: frontend/src/pages/graphPage/mocks/mockData.ts
 interface AxisData {
   ActualPosition: number;
   ActualVelocity: number;

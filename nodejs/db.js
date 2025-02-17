@@ -1,4 +1,4 @@
-// path: D:\DNN_test\nodejs\db.js
+// path: /mnt/d/DNN_test/nodejs/db.js
 const { Pool } = require('pg');
 require('dotenv').config();
 

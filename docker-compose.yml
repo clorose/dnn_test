@@ -7,10 +7,18 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./data:/app/data
-      - ./src:/app/src
-      - ./runs:/app/runs
-      - ./experiments:/app/experiments
+      - type: bind
+        source: ${PWD}/data
+        target: /app/data
+      - type: bind
+        source: ${PWD}/src
+        target: /app/src
+      - type: bind
+        source: ${PWD}/runs
+        target: /app/runs
+      - type: bind
+        source: ${PWD}/experiments
+        target: /app/experiments
     environment:
       - PYTHONUNBUFFERED=1
       - PYTHONDONTWRITEBYTECODE=1

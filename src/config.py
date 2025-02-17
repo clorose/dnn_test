@@ -64,8 +64,8 @@ EVAL_BATCH_SIZE = 32
 
 # 모델 구조 관련 설정
 DROPOUT_RATES = [0.3, 0.4, 0.5] if USE_DROPOUT else [0, 0, 0]
-# HIDDEN_UNITS = [64, 128, 256]
-HIDDEN_UNITS = [64, 128]
+HIDDEN_UNITS = [64, 128, 256]
+# HIDDEN_UNITS = [64, 128]
 KERNEL_INITIALIZER = "he_normal" if USE_HE_INIT else "glorot_uniform"
 ACTIVATION = "relu"
 
