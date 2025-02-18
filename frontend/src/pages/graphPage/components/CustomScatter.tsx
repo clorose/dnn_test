@@ -62,6 +62,7 @@ const CustomScatter = ({ title, data }: AxisChartProps) => {
             <XAxis
               type="number"
               dataKey="current"
+              domain={["dataMin", "dataMax"]}
               label={{ value: "Output Current (A)", position: "bottom" }}
             />
             <YAxis
