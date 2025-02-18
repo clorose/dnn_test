@@ -2,6 +2,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import tensorflow as tf
+import time
 import os
 import numpy as np
 import joblib
@@ -41,6 +42,8 @@ class InputData(BaseModel):
 # 예측을 위한 엔드포인트
 @app.post("/predict")
 def predict(input_data: InputData):
+    start_time = time.time()
+
     try:
         print("-------- Debugging --------")
         print(f"Type of input_data: {type(input_data)}")
@@ -60,6 +63,12 @@ def predict(input_data: InputData):
         print(f"Prediction: {prediction}")
 
         return {"prediction": prediction}
+
+        end_time = time.time()
+
+        execution_time = (end_time - start_time) * 1000
+
+        print(f"Execution time: {execution_time:.2f}ms")
 
     except Exception as e:
         print(f"Error: {str(e)}")

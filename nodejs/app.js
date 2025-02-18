@@ -31,6 +31,8 @@ app.get('/test', async (req, res) => {
 // 기계 데이터 엔드포인트
 app.get('/machine', async (req, res) => {
   try {
+    const start = Date.now();
+
     const query = `
       SELECT *
       FROM machine
@@ -39,7 +41,6 @@ app.get('/machine', async (req, res) => {
     `;
     const result = await pool.query(query);
     const rawData = result.rows[0];
-    console.log(rawData);
 
     if (!rawData) {
       return res.status(404).json({ error: "데이터가 없습니다" });
@@ -145,6 +146,10 @@ app.get('/machine', async (req, res) => {
       formattedData.quality.ai_prediction = 0;
       formattedData.quality.passed = false;
     }
+
+    const end = Date.now();
+
+    console.log(`Data fetched in ${end - start}ms`);
 
     res.json(formattedData);
   } catch (err) {
