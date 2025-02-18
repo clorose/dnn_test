@@ -1,3 +1,4 @@
+// path: ~/Develop/dnn_test/nodejs/app.js
 const express = require('express');
 const cors = require('cors');
 const pool = require('./db');
@@ -32,12 +33,13 @@ app.get('/machine', async (req, res) => {
   try {
     const query = `
       SELECT *
-      FROM machine_process 
+      FROM machine
       ORDER BY RANDOM() 
       LIMIT 1
     `;
     const result = await pool.query(query);
     const rawData = result.rows[0];
+    console.log(rawData);
 
     if (!rawData) {
       return res.status(404).json({ error: "데이터가 없습니다" });
@@ -137,8 +139,8 @@ app.get('/machine', async (req, res) => {
 
     try {
       const aiResponse = await axios.post(`${FASTAPI_URL}/predict`, { features: cleanFeatures });
-      formattedData.quality.ai_prediction = aiResponse.data.prediction[0];
-      formattedData.quality.passed = aiResponse.data.prediction[0] >= 0.5;
+      formattedData.quality.ai_prediction = aiResponse.data.prediction[0][0];
+      formattedData.quality.passed = aiResponse.data.prediction[0][0] >= 0.8;
     } catch (aiError) {
       formattedData.quality.ai_prediction = 0;
       formattedData.quality.passed = false;
