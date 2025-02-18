@@ -1,6 +1,7 @@
 // path: frontend/src/pages/graphPage/hooks/useMachineData.ts
 import { useState, useEffect } from 'react';
 import { MachineData, ScatterData } from '../types/machineData';
+import ky from 'ky';
 
 export const useMachineData = () => {
   const [data, setData] = useState<MachineData | null>(null);
@@ -29,7 +30,7 @@ export const useMachineData = () => {
     };
 
     setOutputCurrentData((prev) => {
-      if (prev.X.length >= 500) {
+      if (prev.X.length >= 10000) {
         return {
           X: [...prev.X.slice(1), currentPoint.X],
           Y: [...prev.Y.slice(1), currentPoint.Y],
@@ -54,7 +55,7 @@ export const useMachineData = () => {
   useEffect(() => {
     const checkConnection = async () => {
       try {
-        const response = await fetch("http://localhost:3000/test");
+        const response = await ky("http://localhost:3000/test");
         setIsConnected(response.ok);
       } catch (error) {
         setIsConnected(false);
@@ -69,7 +70,7 @@ export const useMachineData = () => {
 
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/machine");
+        const response = await ky("http://localhost:3000/machine");
         if (!response.ok) throw new Error("데이터 조회 실패");
 
         const newData: MachineData = await response.json();
@@ -81,7 +82,7 @@ export const useMachineData = () => {
       }
     };
 
-    const interval = setInterval(fetchData, 1000);
+    const interval = setInterval(fetchData, 100);
     return () => clearInterval(interval);
   }, [isConnected]);
 
