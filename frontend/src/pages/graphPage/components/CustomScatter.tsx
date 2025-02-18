@@ -1,4 +1,14 @@
-import { ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, TooltipProps } from 'recharts';
+// path: frontend/src/pages/graphPage/components/CustomScatter.tsx
+import {
+  ResponsiveContainer,
+  ScatterChart,
+  Scatter,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  TooltipProps,
+} from "recharts";
 
 interface ScatterData {
   current: number;
@@ -21,14 +31,14 @@ const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
   const data = payload[0].payload as ScatterData;
   return (
     <div className="bg-white p-2 border border-gray-300 rounded shadow">
-      <p>{`Output Current: ${data.current.toFixed(2)} A`}</p>
-      <p>{`합격률: ${data.passRate}%`}</p>
+      <p>{`Output Current: ${data.current.toFixed(1)} A`}</p>
+      <p>{`합격률: ${data.passRate.toFixed(2)}%`}</p>
     </div>
   );
 };
 
 const CustomShape = ({ cx, cy, payload }: RechartsDotProps): JSX.Element => {
-  if (typeof cx === 'undefined' || typeof cy === 'undefined' || !payload) {
+  if (typeof cx === "undefined" || typeof cy === "undefined" || !payload) {
     return <circle cx={0} cy={0} r={0} fill="none" />;
   }
   return (
@@ -52,18 +62,19 @@ const CustomScatter = ({ title, data }: AxisChartProps) => {
             <XAxis
               type="number"
               dataKey="current"
-              label={{ value: 'Output Current (A)', position: 'bottom' }}
+              label={{ value: "Output Current (A)", position: "bottom" }}
             />
             <YAxis
               type="number"
               dataKey="passRate"
               domain={[0, 100]}
-              label={{ value: '합격률 (%)', angle: -90, position: 'left' }}
+              label={{ value: "합격률 (%)", angle: -90, position: "left" }}
             />
             <Tooltip content={CustomTooltip} />
             <Scatter
               data={data}
               shape={CustomShape}
+              isAnimationActive={false}
             />
           </ScatterChart>
         </ResponsiveContainer>
