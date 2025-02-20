@@ -1,4 +1,4 @@
-// src/types/process.ts
+// path: frontend/src/types/process.ts
 export interface ProcessData {
   // X축 데이터
   X_ActualPosition: number;

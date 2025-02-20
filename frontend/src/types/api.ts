@@ -1,4 +1,4 @@
-// src/types/api.ts
+// path: frontend/src/types/api.ts
 import { ProcessData } from './process';
 
 export interface ServerResponse {

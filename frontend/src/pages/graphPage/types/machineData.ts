@@ -1,3 +1,4 @@
+// path: frontend/src/pages/graphPage/types/machineData.ts
 export interface AxisData {
   ActualPosition: number;
   ActualVelocity: number;
@@ -34,6 +35,7 @@ export interface MachineData {
   };
   status: string;
   quality: QualityResult;
+  mapped_process: number;
 }
 
 export interface ScatterData {
