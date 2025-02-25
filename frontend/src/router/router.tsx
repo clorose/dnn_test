@@ -1,23 +1,28 @@
-import { createBrowserRouter } from "react-router-dom";
-import MainPage from "../pages/mainPage/mainPage";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import ErrorPage from "../pages/errorPage/errorPage";
-import FontPage from "../pages/fontpage/fontPage";
 import GraphPage from "../pages/graphPage/graphPage";
+import DashboardPage from "../pages/dashboardPage/dashboardPage";
+import DashboardTemplate from "../pages/dashboardPage/dashboardTemplate";
 
 export const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <MainPage />,
-    errorElement: <ErrorPage />,
-  },
   {
     path: "/graph",
     element: <GraphPage />,
     errorElement: <ErrorPage />,
   },
   {
-    path: "/font",
-    element: <FontPage />,
+    path: "/",
+    element: <DashboardTemplate />,
     errorElement: <ErrorPage />,
-  }
+    children: [
+      {
+        index: true,
+        element: <Navigate to="/dashboard" replace />,
+      },
+      {
+        path: "dashboard",
+        element: <DashboardPage />,
+      },
+    ],
+  },
 ]);
