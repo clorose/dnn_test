@@ -3,6 +3,7 @@ interface StatCardProps {
   title: string;
   value: string | number;
   trend?: number;
+  className?: string;
 }
 
 const StatCard = ({ title, value, trend }: StatCardProps) => {
@@ -13,9 +14,8 @@ const StatCard = ({ title, value, trend }: StatCardProps) => {
         <div className="text-2xl font-bold">{value}</div>
         {trend !== undefined && (
           <div
-            className={`text-sm ${
-              trend >= 0 ? "text-green-500" : "text-red-500"
-            }`}
+            className={`text-sm ${trend >= 0 ? "text-green-500" : "text-red-500"
+              }`}
           >
             {trend >= 0 ? "↑" : "↓"} {Math.abs(trend)}%
           </div>
