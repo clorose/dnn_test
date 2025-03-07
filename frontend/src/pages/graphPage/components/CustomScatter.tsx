@@ -1,3 +1,4 @@
+// path: frontend/src/pages/graphPage/components/CustomScatter.tsx
 import {
   ResponsiveContainer,
   ScatterChart,

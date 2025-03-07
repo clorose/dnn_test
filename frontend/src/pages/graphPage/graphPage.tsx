@@ -1,3 +1,4 @@
+// path: frontend/src/pages/graphPage/graphPage.tsx
 import { useMachineData } from "./hooks/useMachineData";
 import {
   BarChart,
@@ -8,6 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+
 
 import { MachineData } from "./types/machineData";
 import CustomBar from "./components/CustomBar";
